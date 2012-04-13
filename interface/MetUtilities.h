@@ -38,7 +38,7 @@ class MetUtilities {
 					    std::vector<std::pair<LorentzVector,double> > &iCands ,std::vector<JetInfo> &iJets,double iDZ);
  protected:
   // PU jet identifier 
-  Float_t fMVACut[3][4][4];  //Jet Id MVA
+  double fMVACut[3][4][4];  //Jet Id MVA
 };
 
 #endif

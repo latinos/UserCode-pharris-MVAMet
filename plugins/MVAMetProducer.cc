@@ -96,7 +96,8 @@ void MVAMetProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup) 
   lVisible.push_back(lVis1);
   //Calculate the MVA
   std::pair<LorentzVector,double> lMVAMetInfo = fMVAMet->GetMet(lVisible,lJetInfo,lPFInfo,lVtxInfo,true);
-
+  //std::cout << "Met---> " << lMVAMetInfo.first.pt() << " -- " << lMVAMetInfo.first.phi() << std::endl;
+  
   //Add a PF Met object and put it in the event
   PFMET lDummy;
   PFMET lMVAMet(lDummy.getSpecific(),lMVAMetInfo.second,lMVAMetInfo.first,lPV->position());
@@ -106,16 +107,16 @@ void MVAMetProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup) 
   iEvent.put( lPFMetColl );
 }
 void MVAMetProducer::makeJets(std::vector<MetUtilities::JetInfo> &iJetInfo,PFJetCollection &iUCJets,PFJetCollection &iCJets,VertexCollection &iVertices) { 
-  for(int i0   = 0; i0 < (int) iUCJets.size(); i0++) {   // uncorrecte jets collection                                                                                                        
+  for(int i0   = 0; i0 < (int) iUCJets.size(); i0++) {   // uncorrecte jets collection                                           
     const PFJet       *pUCJet = &(iUCJets.at(i0));
-    for(int i1 = 0; i1 < (int) iCJets .size(); i1++) {   // corrected jets collection                                                                                                   
+    for(int i1 = 0; i1 < (int) iCJets .size(); i1++) {   // corrected jets collection                                         
       const PFJet     *pCJet  = &(iCJets.at(i1));
       if(       pUCJet->jetArea() != pCJet->jetArea()                  ) continue;
       if( fabs(pUCJet->eta() - pCJet->eta())         > 0.01            ) continue;
       if( pCJet->pt()                                < fJetPtMin       ) continue;
       if( !passPFLooseId(pCJet)                                        ) continue;
       double lJec = pCJet ->pt()/pUCJet->pt();
-       double lMVA = jetMVA(pCJet,lJec,iVertices[0],iVertices);
+      double lMVA = jetMVA(pCJet,lJec,iVertices[0],iVertices,false);
       double lNeuFrac = (pCJet->neutralEmEnergy()/pCJet->energy() + pCJet->neutralHadronEnergy()/pCJet->energy());
       MetUtilities::JetInfo pJetObject; 
       pJetObject.p4        = pCJet->p4(); 
@@ -159,27 +160,29 @@ double MVAMetProducer::pfCandDz(const PFCandidate* iPFCand, const Vertex *iPV) {
   if(iPFCand->gsfTrackRef().isNonnull()) lDz = fabs(iPFCand->trackRef()->dz(iPV->position()));
   return lDz;
 }
-double MVAMetProducer::jetMVA (const PFJet *iCorrJet,double iJec, const Vertex iPV, const reco::VertexCollection &iAllvtx) { 
+double MVAMetProducer::jetMVA (const PFJet *iCorrJet,double iJec, const Vertex iPV, const reco::VertexCollection &iAllvtx,bool iPrintDebug) { 
+  iJec = 1.;
   PileupJetIdentifier lPUJetId =  fPUJetIdAlgo->computeIdVariables(iCorrJet,iJec,&iPV,iAllvtx,true);
-  std::cout << "Debug Jet MVA: "
-	    << lPUJetId.nvtx()      << " "
-	    << lPUJetId.jetPt()     << " "
-	    << lPUJetId.jetEta()     << " "
-	    << lPUJetId.jetPhi()     << " "
-	    << lPUJetId.d0()       << " "
-	    << lPUJetId.dZ()      << " "
-	    << lPUJetId.beta()      << " "
-	    << lPUJetId.betaStar()  << " "
-	    << lPUJetId.nCharged()  << " "
-	    << lPUJetId.nNeutrals() << " "
-	    << lPUJetId.dRMean()    << " "
-	    << lPUJetId.frac01()    << " "
-	    << lPUJetId.frac02()    << " "
-	    << lPUJetId.frac03()    << " "
-	    << lPUJetId.frac04()    << " "
-	    << lPUJetId.frac05()
-	    << " === : === "
-	    << lPUJetId.mva() << " " << endl;
+  if(iPrintDebug) { std::cout << "Debug Jet MVA: "
+			      << lPUJetId.nvtx()      << " "
+			      << iCorrJet->pt()       << " "
+			      << lPUJetId.jetEta()    << " "
+			      << lPUJetId.jetPhi()    << " "
+			      << lPUJetId.d0()        << " "
+			      << lPUJetId.dZ()        << " "
+			      << lPUJetId.beta()      << " "
+			      << lPUJetId.betaStar()  << " "
+			      << lPUJetId.nCharged()  << " "
+			      << lPUJetId.nNeutrals() << " "
+			      << lPUJetId.dRMean()    << " "
+			      << lPUJetId.frac01()    << " "
+			      << lPUJetId.frac02()    << " "
+			      << lPUJetId.frac03()    << " "
+			      << lPUJetId.frac04()    << " "
+			      << lPUJetId.frac05()
+			      << " === : === "
+			      << lPUJetId.mva() << " " << endl;
+  }
 
   return lPUJetId.mva();
 }

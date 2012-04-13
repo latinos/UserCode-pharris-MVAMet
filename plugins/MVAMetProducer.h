@@ -53,5 +53,5 @@ class MVAMetProducer : public edm::EDProducer {
 
   bool   passPFLooseId(const PFJet *iJet);
   double pfCandDz(const PFCandidate* iPFCand, const Vertex *iPV) ;
-  double jetMVA  (const PFJet *iuncorrJet,double iJec, const Vertex iPV, const reco::VertexCollection &iAllvtx);
+  double jetMVA  (const PFJet *iuncorrJet,double iJec, const Vertex iPV, const reco::VertexCollection &iAllvtx,bool iPrintDebug=false);
 };
