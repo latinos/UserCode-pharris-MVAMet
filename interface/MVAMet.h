@@ -67,7 +67,7 @@ class MVAMet {
 		      Float_t iNPV    );
   
   std::pair<LorentzVector,double>  GetMet(std::vector<LorentzVector>                                       &iVis,
-					  std::vector<std::pair<std::pair<LorentzVector,double>,double> >  &iJets,
+					  std::vector<MetUtilities::JetInfo>                               &iJets,
 					  std::vector<std::pair<LorentzVector,double> >                    &iCands,
 					  std::vector<Vector>                                              &iVertices,
 					  bool iPrintDebug=false);

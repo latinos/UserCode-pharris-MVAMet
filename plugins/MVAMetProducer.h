@@ -23,6 +23,12 @@ class MVAMetProducer : public edm::EDProducer {
  public:
   typedef math::XYZTLorentzVector LorentzVector;
   typedef math::XYZVector         Vector;
+  struct JetInfo {
+    LorentzVector p4;
+    double        mva;
+    double        neutFrac;  
+  };
+
   explicit MVAMetProducer(const edm::ParameterSet&);
   ~MVAMetProducer();
   
@@ -41,7 +47,7 @@ class MVAMetProducer : public edm::EDProducer {
   PileupJetIdAlgo        *fPUJetIdAlgo;
   MVAMet                 *fMVAMet;
 
-  void makeJets      (std::vector<std::pair<std::pair<LorentzVector,double>,double> > &iJetInfo,PFJetCollection     &iUCJets,PFJetCollection &iCJets,VertexCollection &iVertices); 
+  void makeJets      (std::vector<MetUtilities::JetInfo>                             &iJetInfo,PFJetCollection     &iUCJets,PFJetCollection &iCJets,VertexCollection &iVertices); 
   void makeCandidates(std::vector<          std::pair<LorentzVector,double> >         &iPFInfo,PFCandidateCollection &iCands,Vertex *iPV);
   void makeVertices  (std::vector<Vector>        &iPVInfo,VertexCollection &iVertices);
 

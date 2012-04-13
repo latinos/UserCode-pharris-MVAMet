@@ -58,19 +58,19 @@ bool MetUtilities::passMVA(std::pair<LorentzVector,double> jet) {
   
   return (jet.second  > fMVACut[2][ptId][etaId]);
 }
-MetUtilities::LorentzVector *MetUtilities::leadPt(std::vector<std::pair<std::pair<LorentzVector,double>,double> > &iJets,bool iFirst) {
+MetUtilities::LorentzVector *MetUtilities::leadPt(std::vector<JetInfo> &iJets,bool iFirst) {
   double lPt0 = 0; double lPt1 = 0;
   LorentzVector *lLead=0; 
   LorentzVector *l2nd =0;
   for(int i0 = 0; i0 < int(iJets.size()); i0++) {
-    if(iJets[i0].first.first.pt() > lPt0) {lPt0 = iJets[i0].first.first.pt(); lLead = &(iJets[i0].first.first); continue;}
-    if(iJets[i0].first.first.pt() > lPt1) {lPt1 = iJets[i0].first.first.pt(); l2nd  = &(iJets[i0].first.first); continue;}
+    if(iJets[i0].p4.pt() > lPt0) {lPt0 = iJets[i0].p4.pt(); lLead = &(iJets[i0].p4); continue;}
+    if(iJets[i0].p4.pt() > lPt1) {lPt1 = iJets[i0].p4.pt(); l2nd  = &(iJets[i0].p4); continue;}
   }
   if(iFirst) return lLead;
   return l2nd;
 }
-int MetUtilities::NJets(std::vector<std::pair<std::pair<LorentzVector,double>,double> > &iJets,double iPt) {
-  int lNJet = 0; for(int i0 = 0; i0 < int(iJets.size()); i0++) if(iJets[i0].first.first.pt() > iPt) lNJet++;
+int MetUtilities::NJets(std::vector<JetInfo> &iJets,double iPt) {
+  int lNJet = 0; for(int i0 = 0; i0 < int(iJets.size()); i0++) if(iJets[i0].p4.pt() > iPt) lNJet++;
   return lNJet;
 }
 double MetUtilities::deltaR(LorentzVector &iVec1,LorentzVector &iVec2) { 
@@ -79,10 +79,10 @@ double MetUtilities::deltaR(LorentzVector &iVec1,LorentzVector &iVec2) {
   double lDEta = iVec1.eta()-iVec2.eta();
   return sqrt(lDPhi*lDPhi+lDEta*lDEta);
 }
-void MetUtilities::cleanJets(std::vector<LorentzVector> &iVis,std::vector<std::pair<std::pair<LorentzVector,double>,double> > &iJets) { 
+void MetUtilities::cleanJets(std::vector<LorentzVector> &iVis,std::vector<JetInfo> &iJets) { 
   for(int i0   = 0; i0 < int(iJets.size()); i0++) { 
     for(int i1 = 0; i1 < int(iVis.size());  i1++) { 
-      if(deltaR(iVis[i1],iJets[i0].first.first) < 0.5) {
+      if(deltaR(iVis[i1],iJets[i0].p4) < 0.5) {
 	iJets.erase (iJets.begin()+i0); i0--;
       }
     }
@@ -101,15 +101,16 @@ std::pair<MetUtilities::LorentzVector,double> MetUtilities::TKMet(std::vector<st
   std::pair<LorentzVector,double> lTKMet(lVec,lSumEt);
   return lTKMet;
 }
-std::pair<MetUtilities::LorentzVector,double> MetUtilities::JetMet(std::vector<std::pair<std::pair<LorentzVector,double>,double> > &iJets,bool iPassMVA) { 
+std::pair<MetUtilities::LorentzVector,double> MetUtilities::JetMet(std::vector<JetInfo> &iJets,bool iPassMVA) { 
   double            lSumEt = 0;
   LorentzVector           lVec;
   for(int i0 = 0; i0 < int(iJets.size()); i0++) { 
-    if( passMVA(iJets[i0].first)  && !iPassMVA) continue;
-    if(!passMVA(iJets[i0].first)  &&  iPassMVA) continue;
-    LorentzVector  pFullVec; pFullVec = iJets[i0].first.first; //Full 4 vector
+    std::pair<LorentzVector,double> pMVAInfo(iJets[i0].p4,iJets[i0].mva);
+    if( passMVA(pMVAInfo)  && !iPassMVA) continue;
+    if(!passMVA(pMVAInfo)  &&  iPassMVA) continue;
+    LorentzVector  pFullVec; pFullVec = iJets[i0].p4; //Full 4 vector
     //Now make the Neutral contirbutions
-    TLorentzVector pTVec; pTVec.SetPtEtaPhiM(pFullVec.Pt()*iJets[i0].second,pFullVec.Phi(),pFullVec.eta(),pFullVec.mass());
+    TLorentzVector pTVec; pTVec.SetPtEtaPhiM(pFullVec.Pt()*iJets[i0].neutFrac,pFullVec.Phi(),pFullVec.eta(),pFullVec.mass());
     LorentzVector  pVec ; pVec .SetCoordinates(pTVec.Px(),pTVec.Py(),pTVec.Pz(),pTVec.E());
     lVec    -= pVec;
     lSumEt  += pVec.Pt();
@@ -117,7 +118,7 @@ std::pair<MetUtilities::LorentzVector,double> MetUtilities::JetMet(std::vector<s
   std::pair<LorentzVector,double> lJetMet(lVec,lSumEt);
   return lJetMet;
 }
-std::pair<MetUtilities::LorentzVector,double> MetUtilities::NoPUMet(std::vector<std::pair<LorentzVector,double> > &iCands,std::vector<std::pair<std::pair<LorentzVector,double>,double> > &iJets,double iDZ) { 
+std::pair<MetUtilities::LorentzVector,double> MetUtilities::NoPUMet(std::vector<std::pair<LorentzVector,double> > &iCands,std::vector<JetInfo> &iJets,double iDZ) { 
   double            lSumEt = 0;
   LorentzVector     lVec;
   std::pair<LorentzVector,double> lTKMet  = TKMet (iCands,iDZ,0);
@@ -127,7 +128,7 @@ std::pair<MetUtilities::LorentzVector,double> MetUtilities::NoPUMet(std::vector<
   std::pair<LorentzVector,double> lNoPUMet(lVec,lSumEt);
   return lNoPUMet;
 }
-std::pair<MetUtilities::LorentzVector,double> MetUtilities::PUMet  (std::vector<std::pair<LorentzVector,double> > &iCands,std::vector<std::pair<std::pair<LorentzVector,double>,double> > &iJets,double iDZ) { 
+std::pair<MetUtilities::LorentzVector,double> MetUtilities::PUMet  (std::vector<std::pair<LorentzVector,double> > &iCands,std::vector<JetInfo> &iJets,double iDZ) { 
   double            lSumEt = 0;
   LorentzVector     lVec;
   std::pair<LorentzVector,double> lTKMet  = TKMet (iCands,iDZ,   1);
@@ -137,7 +138,7 @@ std::pair<MetUtilities::LorentzVector,double> MetUtilities::PUMet  (std::vector<
   std::pair<LorentzVector,double> lPUMet(lVec,lSumEt);
   return lPUMet;
 }
-std::pair<MetUtilities::LorentzVector,double>  MetUtilities::PUCMet (std::vector<std::pair<LorentzVector,double> > &iCands,std::vector<std::pair<std::pair<LorentzVector,double>,double> > &iJets,double iDZ) { 
+std::pair<MetUtilities::LorentzVector,double>  MetUtilities::PUCMet (std::vector<std::pair<LorentzVector,double> > &iCands,std::vector<JetInfo> &iJets,double iDZ) { 
   double            lSumEt = 0;
   LorentzVector     lVec;
   std::pair<LorentzVector,double> lPFMet  = TKMet (iCands,iDZ,   2);
@@ -164,7 +165,7 @@ std::pair<MetUtilities::LorentzVector,double> MetUtilities::TKRecoil(double iSum
   return lTKRecoil;
 }
 std::pair<MetUtilities::LorentzVector,double> MetUtilities::NoPURecoil(double iSumEt,LorentzVector iVis,
-								       std::vector<std::pair<LorentzVector,double> > &iCands,std::vector<std::pair<std::pair<LorentzVector,double>,double> > &iJets,
+								       std::vector<std::pair<LorentzVector,double> > &iCands,std::vector<JetInfo> &iJets,
 								       double iDZ) { 
   std::pair<MetUtilities::LorentzVector,double> lNPMet = NoPUMet(iCands,iJets,iDZ);
   LorentzVector lVec; lVec += lNPMet.first; lVec += iVis;
@@ -173,7 +174,7 @@ std::pair<MetUtilities::LorentzVector,double> MetUtilities::NoPURecoil(double iS
   return lNPRecoil;
 }
 std::pair<MetUtilities::LorentzVector,double> MetUtilities::PUCRecoil(double iSumEt,LorentzVector iVis,
-								      std::vector<std::pair<LorentzVector,double> > &iCands,std::vector<std::pair<std::pair<LorentzVector,double>,double> > &iJets,
+								      std::vector<std::pair<LorentzVector,double> > &iCands,std::vector<JetInfo> &iJets,
 								      double iDZ) { 
   std::pair<LorentzVector,double> lPUCMet = PUCMet(iCands,iJets,iDZ);
   LorentzVector lVec; lVec += lPUCMet.first; lVec += iVis;

@@ -185,7 +185,7 @@ Double_t MVAMet::MVAValue(  Bool_t iPhi,
   return lMVA;
 }
 std::pair<MVAMet::LorentzVector,double>  MVAMet::GetMet(std::vector<LorentzVector>                                       &iVis,
-							std::vector<std::pair<std::pair<LorentzVector,double>,double> >  &iJets,
+							std::vector<MetUtilities::JetInfo>                               &iJets,
 							std::vector<std::pair<LorentzVector,double> >                    &iCands,
 							std::vector<Vector>                                              &iVertices,
 							bool iPrintDebug) { 
