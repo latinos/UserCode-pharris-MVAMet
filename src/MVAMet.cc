@@ -184,10 +184,10 @@ Double_t MVAMet::MVAValue(  Bool_t iPhi,
   if(!iPhi) lMVA  = evaluateU1();
   return lMVA;
 }
-std::pair<MVAMet::LorentzVector,double>  MVAMet::GetMet(std::vector<LorentzVector>                     iVis,
-							std::vector<std::pair<LorentzVector,double> >  iJets,
-							std::vector<std::pair<LorentzVector,double> >  iCands,
-							std::vector<Vector>                            iVertices,
+std::pair<MVAMet::LorentzVector,double>  MVAMet::GetMet(std::vector<LorentzVector>                                       &iVis,
+							std::vector<std::pair<std::pair<LorentzVector,double>,double> >  &iJets,
+							std::vector<std::pair<LorentzVector,double> >                    &iCands,
+							std::vector<Vector>                                              &iVertices,
 							bool iPrintDebug) { 
   
   LorentzVector lVis(0,0,0,0); double lVisSumEt = 0;

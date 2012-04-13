@@ -41,11 +41,11 @@ class MVAMetProducer : public edm::EDProducer {
   PileupJetIdAlgo        *fPUJetIdAlgo;
   MVAMet                 *fMVAMet;
 
-  void makeJets      (std::vector<std::pair<LorentzVector,double> > &iJetInfo,PFJetCollection     &iUCJets,PFJetCollection &iCJets,VertexCollection &iVertices); 
-  void makeCandidates(std::vector<std::pair<LorentzVector,double> > &iPFInfo,PFCandidateCollection &iCands,Vertex *iPV);
+  void makeJets      (std::vector<std::pair<std::pair<LorentzVector,double>,double> > &iJetInfo,PFJetCollection     &iUCJets,PFJetCollection &iCJets,VertexCollection &iVertices); 
+  void makeCandidates(std::vector<          std::pair<LorentzVector,double> >         &iPFInfo,PFCandidateCollection &iCands,Vertex *iPV);
   void makeVertices  (std::vector<Vector>        &iPVInfo,VertexCollection &iVertices);
 
   bool   passPFLooseId(const PFJet *iJet);
-  float  pfCandDz(const PFCandidate* iPFCand, const Vertex *iPV) ;
+  double pfCandDz(const PFCandidate* iPFCand, const Vertex *iPV) ;
   double jetMVA  (const PFJet *iuncorrJet,double iJec, const Vertex iPV, const reco::VertexCollection &iAllvtx);
 };
