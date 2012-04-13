@@ -161,7 +161,6 @@ double MVAMetProducer::pfCandDz(const PFCandidate* iPFCand, const Vertex *iPV) {
   return lDz;
 }
 double MVAMetProducer::jetMVA (const PFJet *iCorrJet,double iJec, const Vertex iPV, const reco::VertexCollection &iAllvtx,bool iPrintDebug) { 
-  iJec = 1.;
   PileupJetIdentifier lPUJetId =  fPUJetIdAlgo->computeIdVariables(iCorrJet,iJec,&iPV,iAllvtx,true);
   if(iPrintDebug) { std::cout << "Debug Jet MVA: "
 			      << lPUJetId.nvtx()      << " "
