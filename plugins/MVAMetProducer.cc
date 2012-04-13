@@ -27,8 +27,8 @@ using namespace reco;
 
 MVAMetProducer::MVAMetProducer(const edm::ParameterSet& iConfig) {
   produces<reco::PFMETCollection>();
-  fCorrJetName    = iConfig.getParameter<edm::InputTag>("CorrJetName");
-  fUnCorrJetName  = iConfig.getParameter<edm::InputTag>("JetName");
+  fCorrJetName    = iConfig.getParameter<edm::InputTag>("JetName");
+  fUnCorrJetName  = iConfig.getParameter<edm::InputTag>("CorrJetName");
   fPFCandName     = iConfig.getParameter<edm::InputTag>("PFCandidateName");
   fVertexName     = iConfig.getParameter<edm::InputTag>("VertexName");
   fJetPtMin       = iConfig.getParameter<double>       ("JetPtMin");
@@ -156,8 +156,8 @@ bool MVAMetProducer::passPFLooseId(const PFJet *iJet) {
 }
 double MVAMetProducer::pfCandDz(const PFCandidate* iPFCand, const Vertex *iPV) { 
   double lDz = -999;
-  if(iPFCand->trackRef().isNonnull())    lDz = fabs(iPFCand->trackRef()->dz(iPV->position()));
-  if(iPFCand->gsfTrackRef().isNonnull()) lDz = fabs(iPFCand->trackRef()->dz(iPV->position()));
+  if(iPFCand->trackRef().isNonnull())    lDz = fabs(iPFCand->   trackRef()->dz(iPV->position()));
+  if(iPFCand->gsfTrackRef().isNonnull()) lDz = fabs(iPFCand->gsfTrackRef()->dz(iPV->position()));
   return lDz;
 }
 double MVAMetProducer::jetMVA (const PFJet *iCorrJet,double iJec, const Vertex iPV, const reco::VertexCollection &iAllvtx,bool iPrintDebug) { 
