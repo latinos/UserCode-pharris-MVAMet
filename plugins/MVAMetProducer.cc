@@ -27,8 +27,8 @@ using namespace reco;
 
 MVAMetProducer::MVAMetProducer(const edm::ParameterSet& iConfig) {
   produces<reco::PFMETCollection>();
-  fCorrJetName    = iConfig.getParameter<edm::InputTag>("JetName");
-  fUnCorrJetName  = iConfig.getParameter<edm::InputTag>("CorrJetName");
+  fCorrJetName    = iConfig.getParameter<edm::InputTag>("CorrJetName");
+  fUnCorrJetName  = iConfig.getParameter<edm::InputTag>("JetName");
   fPFCandName     = iConfig.getParameter<edm::InputTag>("PFCandidateName");
   fVertexName     = iConfig.getParameter<edm::InputTag>("VertexName");
   fJetPtMin       = iConfig.getParameter<double>       ("JetPtMin");
