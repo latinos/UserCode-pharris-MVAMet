@@ -70,6 +70,7 @@ void MVAMetProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup) 
   VertexCollection lVertices = *lHVertices;
   Vertex *lPV = 0; if(lVertices.size() > 0) lPV = &lVertices[0]; 
 
+  //Get PF Met
   Handle<reco::PFMETCollection> lHPFMet;
   iEvent.getByLabel("pfMet"      , lHPFMet); 
   PFMETCollection lPFMET = *lHPFMet;
@@ -95,12 +96,13 @@ void MVAMetProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup) 
   lVisible.push_back(lVis0);
   lVisible.push_back(lVis1);
   //Calculate the MVA
-  std::pair<LorentzVector,double> lMVAMetInfo = fMVAMet->GetMet(lVisible,lJetInfo,lPFInfo,lVtxInfo,true);
-  std::cout << "Met---> " << lMVAMetInfo.first.pt() << " -- " << lMVAMetInfo.first.phi() << std::endl;
+  std::pair<LorentzVector,TMatrixD> lMVAMetInfo = fMVAMet->GetMet(lVisible,lJetInfo,lPFInfo,lVtxInfo,true);
+  std::cout << "Met---> " << lMVAMetInfo.first.pt() << " -- " << lMVAMetInfo.first.phi() 
+	    << " Cov matrix " << lMVAMetInfo.second(0,0)  << " -- " << lMVAMetInfo.second(0,1)  << " -- " << lMVAMetInfo.second(1,0)  << " -- " << lMVAMetInfo.second(1,1) << std::endl;
   
   //Add a PF Met object and put it in the event
   PFMET lDummy;
-  PFMET lMVAMet(lDummy.getSpecific(),lMVAMetInfo.second,lMVAMetInfo.first,lPV->position());
+  PFMET lMVAMet(lDummy.getSpecific(),lPFMET.at(0).sumEt(),lMVAMetInfo.first,lPV->position()); //Use PFMET sum Et
   std::auto_ptr<reco::PFMETCollection> lPFMetColl;
   lPFMetColl.reset     ( new reco::PFMETCollection);
   lPFMetColl->push_back( lMVAMet);

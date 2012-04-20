@@ -7,6 +7,8 @@
 MVAMet::MVAMet(double iDZCut) :
   fPhiMethodName("PhiCorrection"),
   fU1MethodName ("U1Correction"),
+  fCovU1MethodName ("CovU1"),
+  fCovU2MethodName ("CovU2"),
   fIsInitialized(kFALSE),
   fDZCut  (iDZCut),
   fU      (0),
@@ -45,6 +47,8 @@ MVAMet::~MVAMet()
 void MVAMet::Initialize(const edm::ParameterSet &iConfig, 
 			TString iU1Weights, 
 			TString iPhiWeights, 
+			TString iCovU1Weights,
+			TString iCovU2Weights,
 			MVAMet::MVAType     iType) { 
   
   fIsInitialized = kTRUE;
@@ -58,6 +62,14 @@ void MVAMet::Initialize(const edm::ParameterSet &iConfig,
   TFile *lU1Forest = new TFile(iU1Weights,"READ");
   fU1Reader  = (GBRForest*)lU1Forest->Get(fU1MethodName);
   lU1Forest->Close();
+
+  TFile *lCovU1Forest = new TFile(iCovU1Weights,"READ");
+  fCovU1Reader       = (GBRForest*)lCovU1Forest->Get(fCovU1MethodName);
+  lCovU1Forest->Close();
+
+  TFile *lCovU2Forest = new TFile(iCovU2Weights,"READ");
+  fCovU2Reader       = (GBRForest*)lCovU2Forest->Get(fCovU2MethodName);
+  lCovU2Forest->Close();
 
   fPhiVals = new Float_t[23];
   fU1Vals  = new Float_t[24];
@@ -117,6 +129,63 @@ Double_t MVAMet::evaluateU1() {
   fU1Vals[23] =  fUPhiMVA ;
   return fU1Reader->GetResponse(fU1Vals);
 }
+//--------------------------------------------------------------------------------------------------
+Double_t MVAMet::evaluateCovU1() { 
+  fU1Vals[0]  =  fNPV     ;
+  fU1Vals[1]  =  fU       ;
+  fU1Vals[2]  =  fUPhi    ;
+  fU1Vals[3]  =  fTKSumEt ;
+  fU1Vals[4]  =  fTKU     ;
+  fU1Vals[5]  =  fTKUPhi  ;
+  fU1Vals[6]  =  fNPSumEt ;
+  fU1Vals[7]  =  fNPU     ;
+  fU1Vals[8]  =  fNPUPhi  ;
+  fU1Vals[9]  =  fPUSumEt ;
+  fU1Vals[10] =  fPUMet   ;
+  fU1Vals[11] =  fPUMetPhi;
+  fU1Vals[12] =  fPCSumEt ;
+  fU1Vals[13] =  fPCU     ;
+  fU1Vals[14] =  fPCUPhi  ;
+  fU1Vals[15] =  fJSPt1   ;
+  fU1Vals[16] =  fJSEta1  ;
+  fU1Vals[17] =  fJSPhi1  ;
+  fU1Vals[18] =  fJSPt2   ;
+  fU1Vals[19] =  fJSEta2  ;
+  fU1Vals[20] =  fJSPhi2  ;
+  fU1Vals[21] =  fNAllJet ;
+  fU1Vals[22] =  fNJet    ;
+  fU1Vals[23] =  fUPhiMVA ;
+  return fCovU1Reader->GetResponse(fU1Vals);
+}
+//--------------------------------------------------------------------------------------------------
+Double_t MVAMet::evaluateCovU2() { 
+  fU1Vals[0]  =  fNPV     ;
+  fU1Vals[1]  =  fU       ;
+  fU1Vals[2]  =  fUPhi    ;
+  fU1Vals[3]  =  fTKSumEt ;
+  fU1Vals[4]  =  fTKU     ;
+  fU1Vals[5]  =  fTKUPhi  ;
+  fU1Vals[6]  =  fNPSumEt ;
+  fU1Vals[7]  =  fNPU     ;
+  fU1Vals[8]  =  fNPUPhi  ;
+  fU1Vals[9]  =  fPUSumEt ;
+  fU1Vals[10] =  fPUMet   ;
+  fU1Vals[11] =  fPUMetPhi;
+  fU1Vals[12] =  fPCSumEt ;
+  fU1Vals[13] =  fPCU     ;
+  fU1Vals[14] =  fPCUPhi  ;
+  fU1Vals[15] =  fJSPt1   ;
+  fU1Vals[16] =  fJSEta1  ;
+  fU1Vals[17] =  fJSPhi1  ;
+  fU1Vals[18] =  fJSPt2   ;
+  fU1Vals[19] =  fJSEta2  ;
+  fU1Vals[20] =  fJSPhi2  ;
+  fU1Vals[21] =  fNAllJet ;
+  fU1Vals[22] =  fNJet    ;
+  fU1Vals[23] =  fUPhiMVA ;
+  return fCovU2Reader->GetResponse(fU1Vals);
+}
+//--------------------------------------------------------------------------------------------------
 Double_t MVAMet::MVAValue(  Bool_t iPhi, 
 			    Float_t iPFSumEt, 
 			    Float_t iU      ,
@@ -177,18 +246,18 @@ Double_t MVAMet::MVAValue(  Bool_t iPhi,
   lMVA = evaluatePhi();
   if(!iPhi) fUPhiMVA = iUPhi+lMVA;
   //Not no nice feature of the training
-  fTKSumEt  /= iPFSumEt;
-  fNPSumEt  /= iPFSumEt;
-  fPUSumEt  /= iPFSumEt;
-  fPCSumEt  /= iPFSumEt; 
+  //fTKSumEt  /= iPFSumEt;
+  //fNPSumEt  /= iPFSumEt;
+  //fPUSumEt  /= iPFSumEt;
+  //fPCSumEt  /= iPFSumEt; 
   if(!iPhi) lMVA  = evaluateU1();
   return lMVA;
 }
-std::pair<MVAMet::LorentzVector,double>  MVAMet::GetMet(std::vector<LorentzVector>                                       &iVis,
-							std::vector<MetUtilities::JetInfo>                               &iJets,
-							std::vector<std::pair<LorentzVector,double> >                    &iCands,
-							std::vector<Vector>                                              &iVertices,
-							bool iPrintDebug) { 
+std::pair<MVAMet::LorentzVector,TMatrixD> MVAMet::GetMet(std::vector<LorentzVector>                                       &iVis,
+							 std::vector<MetUtilities::JetInfo>                               &iJets,
+							 std::vector<std::pair<LorentzVector,double> >                    &iCands,
+							 std::vector<Vector>                                              &iVertices,
+							 bool iPrintDebug) { 
   
   LorentzVector lVis(0,0,0,0); double lVisSumEt = 0;
   for(int i0 = 0; i0 < int(iVis.size()); i0++) lVis      += iVis[i0];
@@ -235,19 +304,33 @@ std::pair<MVAMet::LorentzVector,double>  MVAMet::GetMet(std::vector<LorentzVecto
   Float_t lMVA = evaluatePhi();
   
   fUPhiMVA  = fUPhi + lMVA; 
-  fTKSumEt  /= lPFRec.second;
-  fNPSumEt  /= lPFRec.second;
-  fPUSumEt  /= lPFRec.second;
-  fPCSumEt  /= lPFRec.second;
+  //fTKSumEt  /= lPFRec.second;
+  //fNPSumEt  /= lPFRec.second;
+  //fPUSumEt  /= lPFRec.second;
+  //fPCSumEt  /= lPFRec.second;
   lMVA      = evaluateU1();
 
   TLorentzVector lUVec (0,0,0,0);   lUVec .SetPtEtaPhiM(fU*lMVA,0,fUPhiMVA,0);
   TLorentzVector lVVec (0,0,0,0);   lVVec .SetPtEtaPhiM(lPtVis ,0,lPhiVis ,0);
   if(lMVA < 0) lUVec .RotateZ(TMath::Pi());                                                   
   lUVec      -= lVVec;
-  double lSumEt = 0; //===> This is where we add the significance regression
 
   LorentzVector  lMetVec (0,0,0,0);   lMetVec.SetCoordinates(lUVec.Px(),lUVec.Py(),lUVec.Pz(),lUVec.E());
+
+  TMatrixD     lCov(2,2);
+  //Covariance matrix perpendicular and parallel to the recoil (sort of correct)
+  double lCovU1 = evaluateCovU1();
+  double lCovU2 = evaluateCovU2();
+
+  double lCos2 = cos(fUPhiMVA)*cos(fUPhiMVA);
+  double lSin2 = sin(fUPhiMVA)*sin(fUPhiMVA);
+
+  //Now Compute teh covariance matrix in X and Y 
+  lCov(0,0)   =  lCovU1*lCos2+lCovU2*lSin2;
+  lCov(1,0)   = -lCovU1*sin(fUPhiMVA)*cos(fUPhiMVA)+lCovU2*sin(fUPhiMVA)*cos(fUPhiMVA);
+  lCov(0,1)   = lCov(1,0);
+  lCov(1,1)   = lCovU1*lSin2+lCovU2*lCos2;
+
   if (iPrintDebug == kTRUE) {
     std::cout << "Debug Jet MVA: "
 	      <<  fU        << " : "
@@ -276,6 +359,6 @@ std::pair<MVAMet::LorentzVector,double>  MVAMet::GetMet(std::vector<LorentzVecto
               << " === : === "
               << std::endl;
   }
-  std::pair<LorentzVector,double> lMet(lMetVec,lSumEt);
+  std::pair<LorentzVector,TMatrixD> lMet(lMetVec,lCov);
   return lMet;
 }

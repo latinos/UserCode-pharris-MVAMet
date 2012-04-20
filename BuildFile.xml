@@ -8,6 +8,7 @@
 <use   name="DataFormats/JetReco"/>
 <use   name="DataFormats/METReco"/>
 <use   name="CondFormats/JetMETObjects"/>
+<use   name="CondFormats/EgammaObjects"/>
 <use   name="CMGTools/External"/>
 <export>
   <lib   name="1"/>

@@ -37,10 +37,10 @@ MetUtilities::MetUtilities() { //, bool isData) {
   fMVACut[1][2][0] =  0.2; fMVACut[1][2][1] = 0.2; fMVACut[1][2][2] = 0.5; fMVACut[1][2][3] = 0.7;
   fMVACut[1][3][0] =  0.3; fMVACut[1][3][1] = 0.2; fMVACut[1][3][2] = 0.7; fMVACut[1][3][3] = 0.8;
   //Loose Id 
-  fMVACut[2][0][0] =  0. ; fMVACut[2][0][1] =  0. ; fMVACut[2][0][2] =  0. ; fMVACut[2][0][3] = 0.2;
-  fMVACut[2][1][0] = -0.4; fMVACut[2][1][1] = -0.4; fMVACut[2][1][2] = -0.4; fMVACut[2][1][3] = 0.4;
-  fMVACut[2][2][0] =  0. ; fMVACut[2][2][1] =  0. ; fMVACut[2][2][2] =  0.2; fMVACut[2][2][3] = 0.6;
-  fMVACut[2][3][0] =  0. ; fMVACut[2][3][1] =  0. ; fMVACut[2][3][2] =  0.6; fMVACut[2][3][3] = 0.2;
+  fMVACut[2][0][0] = -0.2; fMVACut[2][0][1] =  0. ; fMVACut[2][0][2] =  0.2; fMVACut[2][0][3] =  0.5;
+  fMVACut[2][1][0] =  0.2; fMVACut[2][1][1] = -0.6; fMVACut[2][1][2] = -0.6; fMVACut[2][1][3] = -0.4;
+  fMVACut[2][2][0] =  0.2; fMVACut[2][2][1] = -0.6; fMVACut[2][2][2] = -0.6; fMVACut[2][2][3] = -0.4;
+  fMVACut[2][3][0] =  0.2; fMVACut[2][3][1] = -0.8; fMVACut[2][3][2] = -0.8; fMVACut[2][3][3] = -0.4;
 }
 
 MetUtilities::~MetUtilities() {}
@@ -107,7 +107,8 @@ std::pair<MetUtilities::LorentzVector,double> MetUtilities::JetMet(std::vector<J
   int lNPass = 0;
   for(int i0 = 0; i0 < int(iJets.size()); i0++) { 
     std::pair<LorentzVector,double> pMVAInfo(iJets[i0].p4,iJets[i0].mva);
-    bool pPass =  passMVA(pMVAInfo);
+    //bool pPass =  passMVA(pMVAInfo);
+    //std::cout << " ====> " << iJets[i0].p4.pt() << " - " << iJets[i0].p4.eta() << " - " << iJets[i0].mva << " - " << pPass << std::endl;
     if( passMVA(pMVAInfo)  && !iPassMVA) continue;
     if(!passMVA(pMVAInfo)  &&  iPassMVA) continue;
     LorentzVector  pFullVec; pFullVec = iJets[i0].p4; //Full 4 vector

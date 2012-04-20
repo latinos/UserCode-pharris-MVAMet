@@ -12,12 +12,13 @@
 #include <utility>
 #include <vector>
 #include <TString.h>
+#include <TMatrixD.h>
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 
 #include "DataFormats/Math/interface/Vector3D.h"
 #include "DataFormats/Math/interface/LorentzVector.h"
 
-#include "pharris/MVAMet/interface/GBRForest.h"
+#include "CondFormats/EgammaObjects/interface/GBRForest.h"
 #include "pharris/MVAMet/interface/MetUtilities.h"
 
 class MVAMet {
@@ -33,13 +34,18 @@ class MVAMet {
   };
   
   void    Initialize(const edm::ParameterSet &iConfig, 
-		     TString iU1Weights    ="$CMSSW_BASE/src/MitPhysics/data/gbrmet.root",
-		     TString iPhiWeights   ="$CMSSW_BASE/src/MitPhysics/data/gbrmetphi.root",
+		     TString iU1Weights      ="$CMSSW_BASE/src/pharris/data/gbrmet_52.root",
+		     TString iPhiWeights     ="$CMSSW_BASE/src/pharris/data/gbrmetphi_52.root",
+		     TString iCovU1Weights   ="$CMSSW_BASE/src/pharris/data/gbrcovu1_52.root",
+		     TString iCovU2Weights   ="$CMSSW_BASE/src/pharris/data/gbrcovu2_52.root",
 		     MVAMet::MVAType  iType=kBaseline);
   
   Bool_t   IsInitialized() const { return fIsInitialized; }
   Double_t evaluatePhi();
   Double_t evaluateU1();
+  Double_t evaluateCovU1();
+  Double_t evaluateCovU2();
+
   Double_t MVAValue(  bool iPhi,
 		      Float_t iPFSumEt, 
 		      Float_t iU      ,
@@ -65,18 +71,20 @@ class MVAMet {
 		      Float_t iNJet   ,
 		      Float_t iNAllJet,
 		      Float_t iNPV    );
-  
-  std::pair<LorentzVector,double>  GetMet(std::vector<LorentzVector>                                       &iVis,
-					  std::vector<MetUtilities::JetInfo>                               &iJets,
-					  std::vector<std::pair<LorentzVector,double> >                    &iCands,
-					  std::vector<Vector>                                              &iVertices,
-					  bool iPrintDebug=false);
+
+  std::pair<LorentzVector,TMatrixD>  GetMet(std::vector<LorentzVector>                                       &iVis,
+					    std::vector<MetUtilities::JetInfo>                               &iJets,
+					    std::vector<std::pair<LorentzVector,double> >                    &iCands,
+					    std::vector<Vector>                                              &iVertices,
+					    bool iPrintDebug=false);
   
   MetUtilities *fUtils;
     
   protected:
     TString      fPhiMethodName;
     TString      fU1MethodName;
+    TString      fCovU1MethodName;
+    TString      fCovU2MethodName;
     Bool_t       fIsInitialized;
     MVAType      fType;
     double  fDZCut  ;
@@ -111,5 +119,7 @@ class MVAMet {
     
     GBRForest *fPhiReader;
     GBRForest *fU1Reader;
+    GBRForest *fCovU1Reader;
+    GBRForest *fCovU2Reader;
 };
 #endif
