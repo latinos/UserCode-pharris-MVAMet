@@ -112,9 +112,11 @@ class MVAMet {
     Float_t fNAllJet;
     Float_t fNPV    ;
     Float_t fUPhiMVA;
+    Float_t fUMVA   ;
     
     Float_t* fPhiVals;
     Float_t* fU1Vals;
+    Float_t* fCovVals;
     
     
     GBRForest *fPhiReader;

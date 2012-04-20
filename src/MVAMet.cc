@@ -35,13 +35,17 @@ MVAMet::MVAMet(double iDZCut) :
   fNAllJet(0),
   fNPV    (0),
   fPhiReader(0),
-  fU1Reader (0)   {    }
+  fU1Reader (0),
+  fCovU1Reader(0),
+  fCovU2Reader(0) {    }
 
 //--------------------------------------------------------------------------------------------------
 MVAMet::~MVAMet()
 {
-  fPhiReader = 0;  
-  fU1Reader  = 0;
+  delete fPhiReader;
+  delete fU1Reader;
+  delete fCovU1Reader;
+  delete fCovU2Reader;
 }
 //--------------------------------------------------------------------------------------------------
 void MVAMet::Initialize(const edm::ParameterSet &iConfig, 
@@ -73,6 +77,7 @@ void MVAMet::Initialize(const edm::ParameterSet &iConfig,
 
   fPhiVals = new Float_t[23];
   fU1Vals  = new Float_t[24];
+  fCovVals = new Float_t[25];
 }
 //--------------------------------------------------------------------------------------------------
 Double_t MVAMet::evaluatePhi() { 
@@ -131,59 +136,61 @@ Double_t MVAMet::evaluateU1() {
 }
 //--------------------------------------------------------------------------------------------------
 Double_t MVAMet::evaluateCovU1() { 
-  fU1Vals[0]  =  fNPV     ;
-  fU1Vals[1]  =  fU       ;
-  fU1Vals[2]  =  fUPhi    ;
-  fU1Vals[3]  =  fTKSumEt ;
-  fU1Vals[4]  =  fTKU     ;
-  fU1Vals[5]  =  fTKUPhi  ;
-  fU1Vals[6]  =  fNPSumEt ;
-  fU1Vals[7]  =  fNPU     ;
-  fU1Vals[8]  =  fNPUPhi  ;
-  fU1Vals[9]  =  fPUSumEt ;
-  fU1Vals[10] =  fPUMet   ;
-  fU1Vals[11] =  fPUMetPhi;
-  fU1Vals[12] =  fPCSumEt ;
-  fU1Vals[13] =  fPCU     ;
-  fU1Vals[14] =  fPCUPhi  ;
-  fU1Vals[15] =  fJSPt1   ;
-  fU1Vals[16] =  fJSEta1  ;
-  fU1Vals[17] =  fJSPhi1  ;
-  fU1Vals[18] =  fJSPt2   ;
-  fU1Vals[19] =  fJSEta2  ;
-  fU1Vals[20] =  fJSPhi2  ;
-  fU1Vals[21] =  fNAllJet ;
-  fU1Vals[22] =  fNJet    ;
-  fU1Vals[23] =  fUPhiMVA ;
-  return fCovU1Reader->GetResponse(fU1Vals);
+  fCovVals[0]  =  fNPV     ;
+  fCovVals[1]  =  fU       ;
+  fCovVals[2]  =  fUPhi    ;
+  fCovVals[3]  =  fTKSumEt ;
+  fCovVals[4]  =  fTKU     ;
+  fCovVals[5]  =  fTKUPhi  ;
+  fCovVals[6]  =  fNPSumEt ;
+  fCovVals[7]  =  fNPU     ;
+  fCovVals[8]  =  fNPUPhi  ;
+  fCovVals[9]  =  fPUSumEt ;
+  fCovVals[10] =  fPUMet   ;
+  fCovVals[11] =  fPUMetPhi;
+  fCovVals[12] =  fPCSumEt ;
+  fCovVals[13] =  fPCU     ;
+  fCovVals[14] =  fPCUPhi  ;
+  fCovVals[15] =  fJSPt1   ;
+  fCovVals[16] =  fJSEta1  ;
+  fCovVals[17] =  fJSPhi1  ;
+  fCovVals[18] =  fJSPt2   ;
+  fCovVals[19] =  fJSEta2  ;
+  fCovVals[20] =  fJSPhi2  ;
+  fCovVals[21] =  fNAllJet ;
+  fCovVals[22] =  fNJet    ;
+  fCovVals[23] =  fUPhiMVA ;
+  fCovVals[24] =  fUMVA    ;
+  return fCovU1Reader->GetResponse(fCovVals);
 }
 //--------------------------------------------------------------------------------------------------
 Double_t MVAMet::evaluateCovU2() { 
-  fU1Vals[0]  =  fNPV     ;
-  fU1Vals[1]  =  fU       ;
-  fU1Vals[2]  =  fUPhi    ;
-  fU1Vals[3]  =  fTKSumEt ;
-  fU1Vals[4]  =  fTKU     ;
-  fU1Vals[5]  =  fTKUPhi  ;
-  fU1Vals[6]  =  fNPSumEt ;
-  fU1Vals[7]  =  fNPU     ;
-  fU1Vals[8]  =  fNPUPhi  ;
-  fU1Vals[9]  =  fPUSumEt ;
-  fU1Vals[10] =  fPUMet   ;
-  fU1Vals[11] =  fPUMetPhi;
-  fU1Vals[12] =  fPCSumEt ;
-  fU1Vals[13] =  fPCU     ;
-  fU1Vals[14] =  fPCUPhi  ;
-  fU1Vals[15] =  fJSPt1   ;
-  fU1Vals[16] =  fJSEta1  ;
-  fU1Vals[17] =  fJSPhi1  ;
-  fU1Vals[18] =  fJSPt2   ;
-  fU1Vals[19] =  fJSEta2  ;
-  fU1Vals[20] =  fJSPhi2  ;
-  fU1Vals[21] =  fNAllJet ;
-  fU1Vals[22] =  fNJet    ;
-  fU1Vals[23] =  fUPhiMVA ;
-  return fCovU2Reader->GetResponse(fU1Vals);
+  fCovVals[0]  =  fNPV     ;
+  fCovVals[1]  =  fU       ;
+  fCovVals[2]  =  fUPhi    ;
+  fCovVals[3]  =  fTKSumEt ;
+  fCovVals[4]  =  fTKU     ;
+  fCovVals[5]  =  fTKUPhi  ;
+  fCovVals[6]  =  fNPSumEt ;
+  fCovVals[7]  =  fNPU     ;
+  fCovVals[8]  =  fNPUPhi  ;
+  fCovVals[9]  =  fPUSumEt ;
+  fCovVals[10] =  fPUMet   ;
+  fCovVals[11] =  fPUMetPhi;
+  fCovVals[12] =  fPCSumEt ;
+  fCovVals[13] =  fPCU     ;
+  fCovVals[14] =  fPCUPhi  ;
+  fCovVals[15] =  fJSPt1   ;
+  fCovVals[16] =  fJSEta1  ;
+  fCovVals[17] =  fJSPhi1  ;
+  fCovVals[18] =  fJSPt2   ;
+  fCovVals[19] =  fJSEta2  ;
+  fCovVals[20] =  fJSPhi2  ;
+  fCovVals[21] =  fNAllJet ;
+  fCovVals[22] =  fNJet    ;
+  fCovVals[23] =  fUPhiMVA ;
+  fCovVals[24] =  fUMVA    ;
+  return fCovU2Reader->GetResponse(fCovVals);
 }
 //--------------------------------------------------------------------------------------------------
 Double_t MVAMet::MVAValue(  Bool_t iPhi, 
@@ -308,7 +315,7 @@ std::pair<MVAMet::LorentzVector,TMatrixD> MVAMet::GetMet(std::vector<LorentzVect
   //fNPSumEt  /= lPFRec.second;
   //fPUSumEt  /= lPFRec.second;
   //fPCSumEt  /= lPFRec.second;
-  lMVA      = evaluateU1();
+  fUMVA     = evaluateU1();
 
   TLorentzVector lUVec (0,0,0,0);   lUVec .SetPtEtaPhiM(fU*lMVA,0,fUPhiMVA,0);
   TLorentzVector lVVec (0,0,0,0);   lVVec .SetPtEtaPhiM(lPtVis ,0,lPhiVis ,0);
