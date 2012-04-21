@@ -76,11 +76,16 @@ void MVAMetProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup) 
   Handle<reco::PFMETCollection> lHPFMet;
   iEvent.getByLabel("pfMet"      , lHPFMet); 
   PFMETCollection lPFMET = *lHPFMet;
-    
+
+  //Get Rho
+  Handle<double>                                                lHRho;
+  iEvent.getByLabel("kt6PFJets_rho"                           , lHRho);
+  double lRho = *lHRho;
+  
   //Make Generic Objects
   std::vector<LorentzVector >                                     lVisible;
   std::vector<          std::pair<LorentzVector,double> >         lPFInfo;  makeCandidates(lPFInfo, lCands,lPV);
-  std::vector<MetUtilities::JetInfo>                              lJetInfo; makeJets      (lJetInfo,lUCJets,lCJets,lVertices);
+  std::vector<MetUtilities::JetInfo>                              lJetInfo; makeJets      (lJetInfo,lUCJets,lCJets,lVertices,lRho);
   std::vector<Vector>                                             lVtxInfo; makeVertices  (lVtxInfo,lVertices);
  
   //Dummy visible stuff
@@ -110,7 +115,7 @@ void MVAMetProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup) 
   lPFMetColl->push_back( lMVAMet);
   iEvent.put( lPFMetColl );
 }
-void MVAMetProducer::makeJets(std::vector<MetUtilities::JetInfo> &iJetInfo,PFJetCollection &iUCJets,PFJetCollection &iCJets,VertexCollection &iVertices) { 
+void MVAMetProducer::makeJets(std::vector<MetUtilities::JetInfo> &iJetInfo,PFJetCollection &iUCJets,PFJetCollection &iCJets,VertexCollection &iVertices,double iRho) { 
   for(int i0   = 0; i0 < (int) iUCJets.size(); i0++) {   // uncorrecte jets collection                                           
     const PFJet       *pUCJet = &(iUCJets.at(i0));
     for(int i1 = 0; i1 < (int) iCJets .size(); i1++) {   // corrected jets collection                                         
@@ -123,9 +128,14 @@ void MVAMetProducer::makeJets(std::vector<MetUtilities::JetInfo> &iJetInfo,PFJet
       double lMVA = jetMVA(pCJet,lJec,iVertices[0],iVertices,false);
       double lNeuFrac = (pCJet->neutralEmEnergy()/pCJet->energy() + pCJet->neutralHadronEnergy()/pCJet->energy());
       MetUtilities::JetInfo pJetObject; 
-      pJetObject.p4        = pCJet->p4(); 
+      pJetObject.p4       = pCJet->p4(); 
       pJetObject.mva      = lMVA;
       pJetObject.neutFrac = lNeuFrac;
+      //Following discussion with Jet MET convenors < 10 GeV use rho correction only below 10
+      if(pUCJet->pt() < 10) { 
+	TLorentzVector lCorrPt ;  lCorrPt.SetPtEtaPhiM(max(pCJet->pt()-pCJet->jetArea()*iRho,0.),pCJet->eta(),pCJet->phi(),pCJet->mass());
+	pJetObject.p4.SetCoordinates(lCorrPt.Px(),lCorrPt.Py(),lCorrPt.Pz(),lCorrPt.E());
+      }
       iJetInfo.push_back(pJetObject);
       break;
     }

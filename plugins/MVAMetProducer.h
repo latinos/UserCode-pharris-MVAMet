@@ -47,7 +47,7 @@ class MVAMetProducer : public edm::EDProducer {
   PileupJetIdAlgo        *fPUJetIdAlgo;
   MVAMet                 *fMVAMet;
 
-  void makeJets      (std::vector<MetUtilities::JetInfo>                             &iJetInfo,PFJetCollection     &iUCJets,PFJetCollection &iCJets,VertexCollection &iVertices); 
+  void makeJets      (std::vector<MetUtilities::JetInfo>                             &iJetInfo,PFJetCollection     &iUCJets,PFJetCollection &iCJets,VertexCollection &iVertices,double iRho); 
   void makeCandidates(std::vector<          std::pair<LorentzVector,double> >         &iPFInfo,PFCandidateCollection &iCands,Vertex *iPV);
   void makeVertices  (std::vector<Vector>        &iPVInfo,VertexCollection &iVertices);
 
