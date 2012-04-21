@@ -36,8 +36,10 @@ MVAMetProducer::MVAMetProducer(const edm::ParameterSet& iConfig) {
   fPUJetIdAlgo    = new PileupJetIdAlgo(iConfig);
   fMVAMet         = new MVAMet(fDZMin);
   fMVAMet         ->Initialize(iConfig,
-			       TString((getenv("CMSSW_BASE")+string("/src/pharris/MVAMet/data/gbrmet.root"))),
-			       TString((getenv("CMSSW_BASE")+string("/src/pharris/MVAMet/data/gbrmetphi.root")))
+			       TString((getenv("CMSSW_BASE")+string("/src/pharris/MVAMet/data/gbrmet_52.root"))),        //U
+			       TString((getenv("CMSSW_BASE")+string("/src/pharris/MVAMet/data/gbrmetphi_52.root"))),     //U Phi
+			       TString((getenv("CMSSW_BASE")+string("/src/pharris/MVAMet/data/gbrmetu1cov_52.root"))),   //U1 Cov
+			       TString((getenv("CMSSW_BASE")+string("/src/pharris/MVAMet/data/gbrmetu2cov_52_dummy.root"))) //U2 Cov
 			       );
 
 }

@@ -88,6 +88,7 @@ class MVAMet {
     Bool_t       fIsInitialized;
     MVAType      fType;
     double  fDZCut  ;
+    Float_t fSumEt  ;
     Float_t fU      ;
     Float_t fUPhi   ;
     Float_t fTKSumEt;

@@ -9,10 +9,10 @@ mvaMet   = cms.EDProducer("MVAMetProducer",
                           JetPtMin        = cms.double(1.0),
                           dZMin           = cms.double(0.2),
                           impactParTkThreshold = cms.untracked.double(1.) ,
-                          tmvaWeights = cms.untracked.string("CMGTools/External/data/mva_JetID_v1.weights.xml"),
-                          tmvaMethod  = cms.untracked.string("JetID"),
-                          version = cms.untracked.int32(-1),
-                          tmvaVariables = cms.untracked.vstring(
+                          tmvaWeights    = cms.string("CMGTools/External/data/mva_JetID_v1.weights.xml"),
+                          tmvaMethod    = cms.string("JetID"),
+                          version       = cms.int32(-1),
+                          tmvaVariables = cms.vstring(
     "nvtx",
     "jetPt",
     "jetEta",
@@ -30,6 +30,7 @@ mvaMet   = cms.EDProducer("MVAMetProducer",
     "frac04",
     "frac05",
     ),
+                          tmvaSpectators = cms.vstring(),
                           JetIdParams = JetIdParams
                           )
 
