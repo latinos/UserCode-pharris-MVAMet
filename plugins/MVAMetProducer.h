@@ -41,6 +41,7 @@ class MVAMetProducer : public edm::EDProducer {
   edm::InputTag fUnCorrJetName; 
   edm::InputTag fPFCandName; 
   edm::InputTag fVertexName; 
+  edm::InputTag fRhoName; 
 
   double                  fJetPtMin;
   double                  fDZMin;

@@ -10,7 +10,7 @@ process.load('pharris.MVAMet.metProducerSequence_cff')
  
 #process.GlobalTag.globaltag = 'GR_R_42_V23::All'
 process.GlobalTag.globaltag = 'MC_44_V12::All'
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(10) )
 
 process.source = cms.Source("PoolSource",
                             fileNames = cms.untracked.vstring(

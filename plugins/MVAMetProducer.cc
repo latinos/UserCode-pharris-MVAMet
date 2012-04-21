@@ -31,8 +31,10 @@ MVAMetProducer::MVAMetProducer(const edm::ParameterSet& iConfig) {
   fUnCorrJetName  = iConfig.getParameter<edm::InputTag>("CorrJetName");
   fPFCandName     = iConfig.getParameter<edm::InputTag>("PFCandidateName");
   fVertexName     = iConfig.getParameter<edm::InputTag>("VertexName");
+  fRhoName        = iConfig.getParameter<edm::InputTag>("RhoName");
   fJetPtMin       = iConfig.getParameter<double>       ("JetPtMin");
   fDZMin          = iConfig.getParameter<double>       ("dZMin");
+
   fPUJetIdAlgo    = new PileupJetIdAlgo(iConfig);
   fMVAMet         = new MVAMet(fDZMin);
   fMVAMet         ->Initialize(iConfig,
@@ -78,8 +80,8 @@ void MVAMetProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup) 
   PFMETCollection lPFMET = *lHPFMet;
 
   //Get Rho
-  Handle<double>                                                lHRho;
-  iEvent.getByLabel("kt6PFJets_rho"                           , lHRho);
+  Handle<double>                                        lHRho;
+  iEvent.getByLabel(fRhoName                          , lHRho);
   double lRho = *lHRho;
   
   //Make Generic Objects
@@ -106,7 +108,7 @@ void MVAMetProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup) 
   std::pair<LorentzVector,TMatrixD> lMVAMetInfo = fMVAMet->GetMet(lVisible,lJetInfo,lPFInfo,lVtxInfo,true);
   std::cout << "Met---> " << lMVAMetInfo.first.pt() << " -- " << lMVAMetInfo.first.phi() 
 	    << " Cov matrix " << lMVAMetInfo.second(0,0)  << " -- " << lMVAMetInfo.second(0,1)  << " -- " << lMVAMetInfo.second(1,0)  << " -- " << lMVAMetInfo.second(1,1) << std::endl;
-  
+
   //Add a PF Met object and put it in the event
   PFMET lDummy;
   PFMET lMVAMet(lDummy.getSpecific(),lPFMET.at(0).sumEt(),lMVAMetInfo.first,lPV->position()); //Use PFMET sum Et
