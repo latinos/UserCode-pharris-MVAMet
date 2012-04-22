@@ -304,10 +304,10 @@ std::pair<MVAMet::LorentzVector,TMatrixD> MVAMet::GetMet(std::vector<LorentzVect
   fPCSumEt = lPCRec.second/lPFRec.second;
   fPCU     = lPCRec.first.rho() ;
   fPCUPhi  = lPCRec.first.phi();
-  fJSPt1   = 0; if(lLead != 0) lLead->pt();
+  fJSPt1   = 0; if(lLead != 0) fJSPt1  = lLead->pt();
   fJSEta1  = 0; if(lLead != 0) fJSEta1 = lLead->eta();
   fJSPhi1  = 0; if(lLead != 0) fJSPhi1 = lLead->phi();
-  fJSPt2   = 0; if(l2nd  != 0) l2nd ->pt();
+  fJSPt2   = 0; if(l2nd  != 0) fJSPt2  = l2nd ->pt();
   fJSEta2  = 0; if(l2nd  != 0) fJSEta2 = l2nd ->eta();
   fJSPhi2  = 0; if(l2nd  != 0) fJSPhi2 = l2nd ->phi();
   fNJet    = lNJets  ;
