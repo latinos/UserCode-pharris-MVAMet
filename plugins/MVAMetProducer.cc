@@ -135,7 +135,7 @@ void MVAMetProducer::makeJets(std::vector<MetUtilities::JetInfo> &iJetInfo,PFJet
       pJetObject.neutFrac = lNeuFrac;
       //Following discussion with Jet MET convenors < 10 GeV use rho correction only below 10
       if(pUCJet->pt() < 10) { 
-	TLorentzVector lCorrPt ;  lCorrPt.SetPtEtaPhiM(max(pCJet->pt()-pCJet->jetArea()*iRho,0.),pCJet->eta(),pCJet->phi(),pCJet->mass());
+	TLorentzVector lCorrPt ;  lCorrPt.SetPtEtaPhiM(max(pUCJet->pt()-pCJet->jetArea()*iRho,0.),pCJet->eta(),pCJet->phi(),pCJet->mass());
 	pJetObject.p4.SetCoordinates(lCorrPt.Px(),lCorrPt.Py(),lCorrPt.Pz(),lCorrPt.E());
       }
       iJetInfo.push_back(pJetObject);
