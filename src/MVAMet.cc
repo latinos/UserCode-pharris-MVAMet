@@ -1,6 +1,7 @@
 #include <TFile.h>
 #include <TMath.h>
 #include <TLorentzVector.h>
+#include "Cintex/Cintex.h"
 #include "pharris/MVAMet/interface/MVAMet.h"
 
 //--------------------------------------------------------------------------------------------------
@@ -56,6 +57,7 @@ void MVAMet::Initialize(const edm::ParameterSet &iConfig,
 			TString iCovU2Weights,
 			MVAMet::MVAType     iType) { 
   
+  ROOT::Cintex::Cintex::Enable();
   fIsInitialized = kTRUE;
   fUtils         = new MetUtilities();//iConfig);  
   fType          = iType;

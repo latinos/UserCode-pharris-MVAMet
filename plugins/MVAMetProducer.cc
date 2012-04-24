@@ -107,7 +107,7 @@ void MVAMetProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup) 
   lVisible.push_back(lVis0);
   lVisible.push_back(lVis1);
   //Calculate the MVA
-  std::pair<LorentzVector,TMatrixD> lMVAMetInfo = fMVAMet->GetMet(lVisible,lJetInfo,lPFInfo,lVtxInfo,true);
+  std::pair<LorentzVector,TMatrixD> lMVAMetInfo = fMVAMet->GetMet(lVisible,lJetInfo,lPFInfo,lVtxInfo,false);
   std::cout << "Met---> " << lMVAMetInfo.first.pt() << " -- " << lMVAMetInfo.first.phi() 
 	    << " Cov matrix " << lMVAMetInfo.second(0,0)  << " -- " << lMVAMetInfo.second(0,1)  << " -- " << lMVAMetInfo.second(1,0)  << " -- " << lMVAMetInfo.second(1,1) << std::endl;
 

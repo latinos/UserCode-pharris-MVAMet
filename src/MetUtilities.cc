@@ -127,7 +127,8 @@ std::pair<MetUtilities::LorentzVector,double> MetUtilities::NoPUMet(std::vector<
   LorentzVector     lVec;
   std::pair<LorentzVector,double> lTKMet  = TKMet (iCands,iDZ,0);
   std::pair<LorentzVector,double> lJetMet = JetMet(iJets     ,true);
-  lVec += lTKMet.first;     lSumEt += lTKMet .second;
+  double lNPSumEtBug = 0; for(int i0 = 0; i0 < int(iCands.size()); i0++) if(iCands[i0].second > 0) lNPSumEtBug += iCands[i0].first.pt();  //One More bug
+  lVec += lTKMet.first;     lSumEt += lNPSumEtBug;
   lVec += lJetMet.first;    lSumEt += lJetMet.second; 
   std::pair<LorentzVector,double> lNoPUMet(lVec,lSumEt);
   return lNoPUMet;

@@ -10,6 +10,7 @@
 <use   name="CondFormats/JetMETObjects"/>
 <use   name="CondFormats/EgammaObjects"/>
 <use   name="CMGTools/External"/>
+<use   name="rootcintex"/>
 <export>
   <lib   name="1"/>
 </export>
