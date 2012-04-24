@@ -323,7 +323,6 @@ std::pair<MVAMet::LorentzVector,TMatrixD> MVAMet::GetMet(std::vector<LorentzVect
   //fPCSumEt  /= lPFRec.second;
   lMVA     = evaluateU1();
   fUMVA    = fU*lMVA;
-  //std::cout << "test : "<< evaluatePhi() << "-- "<< evaluateU1() << std::endl;
 
   TLorentzVector lUVec (0,0,0,0);   lUVec .SetPtEtaPhiM(fUMVA,0,fUPhiMVA,0);
   TLorentzVector lVVec (0,0,0,0);   lVVec .SetPtEtaPhiM(lPtVis ,0,lPhiVis ,0);
