@@ -281,7 +281,7 @@ std::pair<MVAMet::LorentzVector,TMatrixD> MVAMet::GetMet(std::vector<LorentzVect
   std::pair<LorentzVector,double> lTKRec  = fUtils->TKRecoil  (lVisSumEt,lVis,iCands,      fDZCut);
   std::pair<LorentzVector,double> lNPRec  = fUtils->NoPURecoil(lVisSumEt,lVis,iCands,iJets,fDZCut);
   std::pair<LorentzVector,double> lPCRec  = fUtils->PUCRecoil (lVisSumEt,lVis,iCands,iJets,fDZCut);
-  std::pair<LorentzVector,double> lPUMet  = fUtils->PUMet     (               iCands,iJets,fDZCut);
+  std::pair<LorentzVector,double> lPUMet  = fUtils->PUMet     (               iCands,iJets,0.2); //==> the others used 0.1
   
  
   int lNJets           = fUtils->NJets(iJets,30);
@@ -326,6 +326,7 @@ std::pair<MVAMet::LorentzVector,TMatrixD> MVAMet::GetMet(std::vector<LorentzVect
   TLorentzVector lUVec (0,0,0,0);   lUVec .SetPtEtaPhiM(fU*lMVA,0,fUPhiMVA,0);
   TLorentzVector lVVec (0,0,0,0);   lVVec .SetPtEtaPhiM(lPtVis ,0,lPhiVis ,0);
   if(lMVA < 0) lUVec .RotateZ(TMath::Pi());                                                   
+  std::cout << "=====> " << lUVec.Pt() << " -- " << lUVec.Phi() << " ==> " << evaluateU1() << " -- " << evaluatePhi() << std::endl;
   lUVec      -= lVVec;
 
   LorentzVector  lMetVec (0,0,0,0);   lMetVec.SetCoordinates(lUVec.Px(),lUVec.Py(),lUVec.Pz(),lUVec.E());
@@ -344,7 +345,7 @@ std::pair<MVAMet::LorentzVector,TMatrixD> MVAMet::GetMet(std::vector<LorentzVect
   lCov(1,1)   = lCovU1*lSin2+lCovU2*lCos2;
 
   if (iPrintDebug == kTRUE) {
-    std::cout << "Debug Jet MVA: "
+    std::cout << "Debug MetMVA: "
 	      <<  fU        << " : "
 	      <<  fUPhi     << " : "
 	      <<  fTKSumEt  << " : "

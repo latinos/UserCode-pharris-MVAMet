@@ -107,8 +107,8 @@ std::pair<MetUtilities::LorentzVector,double> MetUtilities::JetMet(std::vector<J
   int lNPass = 0;
   for(int i0 = 0; i0 < int(iJets.size()); i0++) { 
     std::pair<LorentzVector,double> pMVAInfo(iJets[i0].p4,iJets[i0].mva);
-    //bool pPass =  passMVA(pMVAInfo);
-    //std::cout << " ====> " << iJets[i0].p4.pt() << " - " << iJets[i0].p4.eta() << " - " << iJets[i0].mva << " - " << pPass << std::endl;
+    bool pPass =  passMVA(pMVAInfo);
+    //std::cout << " ====> " << iJets[i0].p4.pt() << " - " << iJets[i0].p4.eta() << " - " << iJets[i0].mva << " - " << pPass << " -- " << iJets[i0].neutFrac << " -- " << lVec.Pt() << std::endl;
     if( passMVA(pMVAInfo)  && !iPassMVA) continue;
     if(!passMVA(pMVAInfo)  &&  iPassMVA) continue;
     LorentzVector  pFullVec; pFullVec = iJets[i0].p4; //Full 4 vector

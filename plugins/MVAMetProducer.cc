@@ -1,3 +1,5 @@
+
+
 // system include files
 #include <memory>
 #include <cmath>
@@ -27,8 +29,8 @@ using namespace reco;
 
 MVAMetProducer::MVAMetProducer(const edm::ParameterSet& iConfig) {
   produces<reco::PFMETCollection>();
-  fCorrJetName    = iConfig.getParameter<edm::InputTag>("JetName");
-  fUnCorrJetName  = iConfig.getParameter<edm::InputTag>("CorrJetName");
+  fCorrJetName    = iConfig.getParameter<edm::InputTag>("CorrJetName");
+  fUnCorrJetName  = iConfig.getParameter<edm::InputTag>("JetName");
   fPFCandName     = iConfig.getParameter<edm::InputTag>("PFCandidateName");
   fVertexName     = iConfig.getParameter<edm::InputTag>("VertexName");
   fRhoName        = iConfig.getParameter<edm::InputTag>("RhoName");
@@ -124,11 +126,12 @@ void MVAMetProducer::makeJets(std::vector<MetUtilities::JetInfo> &iJetInfo,PFJet
       const PFJet     *pCJet  = &(iCJets.at(i1));
       if(       pUCJet->jetArea() != pCJet->jetArea()                  ) continue;
       if( fabs(pUCJet->eta() - pCJet->eta())         > 0.01            ) continue;
-      if( pCJet->pt()                                < fJetPtMin       ) continue;
-      if( !passPFLooseId(pCJet)                                        ) continue;
+      if( pUCJet->pt()                               < fJetPtMin       ) continue;
+      //if( fabs(pCJet->eta())                         > 4.99            ) continue;
+      if( !passPFLooseId(pUCJet)                                       ) continue;
       double lJec = pCJet ->pt()/pUCJet->pt();
-      double lMVA = jetMVA(pCJet,lJec,iVertices[0],iVertices,false);
-      double lNeuFrac = (pCJet->neutralEmEnergy()/pCJet->energy() + pCJet->neutralHadronEnergy()/pCJet->energy());
+      double lMVA = jetMVA(pUCJet,lJec,iVertices[0],iVertices,false);
+      double lNeuFrac = (pUCJet->neutralEmEnergy()/pUCJet->energy() + pUCJet->neutralHadronEnergy()/pUCJet->energy());
       MetUtilities::JetInfo pJetObject; 
       pJetObject.p4       = pCJet->p4(); 
       pJetObject.mva      = lMVA;
@@ -138,6 +141,7 @@ void MVAMetProducer::makeJets(std::vector<MetUtilities::JetInfo> &iJetInfo,PFJet
 	TLorentzVector lCorrPt ;  lCorrPt.SetPtEtaPhiM(max(pUCJet->pt()-pCJet->jetArea()*iRho,0.),pCJet->eta(),pCJet->phi(),pCJet->mass());
 	pJetObject.p4.SetCoordinates(lCorrPt.Px(),lCorrPt.Py(),lCorrPt.Pz(),lCorrPt.E());
       }
+      //pJetObject.p4       = pUCJet->p4(); 
       iJetInfo.push_back(pJetObject);
       break;
     }
@@ -161,6 +165,7 @@ void MVAMetProducer::makeVertices(std::vector<Vector>        &iPVInfo,VertexColl
   }
 }
 bool MVAMetProducer::passPFLooseId(const PFJet *iJet) { 
+  //std::cout << " ==> " << iJet->pt() << " - " << iJet->eta() << " : " << iJet->energy() << " - " << iJet->neutralEmEnergy() << " - " << iJet->nConstituents() << " - " << iJet->chargedHadronEnergy() << " _ " << iJet->chargedEmEnergy() << " - " << iJet->chargedMultiplicity() << std::endl;
   if(iJet->energy()== 0)                                  return false;
   if(iJet->neutralHadronEnergy()/iJet->energy() > 0.99)   return false;
   if(iJet->neutralEmEnergy()/iJet->energy()     > 0.99)   return false;
@@ -173,7 +178,7 @@ bool MVAMetProducer::passPFLooseId(const PFJet *iJet) {
 double MVAMetProducer::pfCandDz(const PFCandidate* iPFCand, const Vertex *iPV) { 
   double lDz = -999;
   if(iPFCand->trackRef().isNonnull())    lDz = fabs(iPFCand->   trackRef()->dz(iPV->position()));
-  //if(iPFCand->gsfTrackRef().isNonnull()) lDz = fabs(iPFCand->gsfTrackRef()->dz(iPV->position()));
+  if(iPFCand->gsfTrackRef().isNonnull()) lDz = fabs(iPFCand->gsfTrackRef()->dz(iPV->position()));
   return lDz;
 }
 double MVAMetProducer::jetMVA (const PFJet *iCorrJet,double iJec, const Vertex iPV, const reco::VertexCollection &iAllvtx,bool iPrintDebug) { 
