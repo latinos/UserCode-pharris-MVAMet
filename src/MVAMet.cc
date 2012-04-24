@@ -326,7 +326,6 @@ std::pair<MVAMet::LorentzVector,TMatrixD> MVAMet::GetMet(std::vector<LorentzVect
   TLorentzVector lUVec (0,0,0,0);   lUVec .SetPtEtaPhiM(fU*lMVA,0,fUPhiMVA,0);
   TLorentzVector lVVec (0,0,0,0);   lVVec .SetPtEtaPhiM(lPtVis ,0,lPhiVis ,0);
   if(lMVA < 0) lUVec .RotateZ(TMath::Pi());                                                   
-  std::cout << "=====> " << lUVec.Pt() << " -- " << lUVec.Phi() << " ==> " << evaluateU1() << " -- " << evaluatePhi() << std::endl;
   lUVec      -= lVVec;
 
   LorentzVector  lMetVec (0,0,0,0);   lMetVec.SetCoordinates(lUVec.Px(),lUVec.Py(),lUVec.Pz(),lUVec.E());
