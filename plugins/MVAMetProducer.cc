@@ -106,6 +106,7 @@ void MVAMetProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup) 
   LorentzVector lVis1; lVis1.SetCoordinates(lD1.Px(),lD1.Py(),lD1.Pz(),lD1.E());
   lVisible.push_back(lVis0);
   lVisible.push_back(lVis1);
+
   //Calculate the MVA
   std::pair<LorentzVector,TMatrixD> lMVAMetInfo = fMVAMet->GetMet(lVisible,lJetInfo,lPFInfo,lVtxInfo,false);
   std::cout << "Met---> " << lMVAMetInfo.first.pt() << " -- " << lMVAMetInfo.first.phi() 
@@ -130,7 +131,7 @@ void MVAMetProducer::makeJets(std::vector<MetUtilities::JetInfo> &iJetInfo,PFJet
       //if( fabs(pCJet->eta())                         > 4.99            ) continue;
       if( !passPFLooseId(pUCJet)                                       ) continue;
       double lJec = pCJet ->pt()/pUCJet->pt();
-      double lMVA = jetMVA(pUCJet,lJec,iVertices[0],iVertices,false);
+      double lMVA = jetMVA(pCJet,lJec,iVertices[0],iVertices,false);
       double lNeuFrac = (pUCJet->neutralEmEnergy()/pUCJet->energy() + pUCJet->neutralHadronEnergy()/pUCJet->energy());
       MetUtilities::JetInfo pJetObject; 
       pJetObject.p4       = pCJet->p4(); 
