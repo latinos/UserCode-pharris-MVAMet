@@ -7,6 +7,7 @@ process.load('Configuration.StandardSequences.Services_cff')
 process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
 process.load('JetMETCorrections.Configuration.JetCorrectionProducers_cff')
 process.load('pharris.MVAMet.metProducerSequence_cff')
+#process.load('pharris.MVAMet.testMetProducerSequence_cff')
  
 #process.GlobalTag.globaltag = 'GR_R_42_V23::All'
 #process.GlobalTag.globaltag = 'MC_44_V12::All'

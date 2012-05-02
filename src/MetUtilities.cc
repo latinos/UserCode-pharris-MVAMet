@@ -81,11 +81,13 @@ double MetUtilities::deltaR(LorentzVector &iVec1,LorentzVector &iVec2) {
 }
 void MetUtilities::cleanJets(std::vector<LorentzVector> &iVis,std::vector<JetInfo> &iJets) { 
   for(int i0   = 0; i0 < int(iJets.size()); i0++) { 
+    bool lJetIsLepton = false;
     for(int i1 = 0; i1 < int(iVis.size());  i1++) { 
       if(deltaR(iVis[i1],iJets[i0].p4) < 0.5) {
-	iJets.erase (iJets.begin()+i0); i0--;
+	lJetIsLepton = true;
       }
     }
+    if(lJetIsLepton) { iJets.erase (iJets.begin()+i0); i0--;}
   }
 }
 std::pair<MetUtilities::LorentzVector,double> MetUtilities::TKMet(std::vector<std::pair<LorentzVector,double> > &iCands,double iDZ,int iLowDz) { 
@@ -108,7 +110,7 @@ std::pair<MetUtilities::LorentzVector,double> MetUtilities::JetMet(std::vector<J
   for(int i0 = 0; i0 < int(iJets.size()); i0++) { 
     std::pair<LorentzVector,double> pMVAInfo(iJets[i0].p4,iJets[i0].mva);
     bool pPass =  passMVA(pMVAInfo);
-    //std::cout << " ====> " << iJets[i0].p4.pt() << " - " << iJets[i0].p4.eta() << " - " << iJets[i0].mva << " - " << pPass << " -- " << iJets[i0].neutFrac << " -- " << lVec.Pt() << std::endl;
+
     if( passMVA(pMVAInfo)  && !iPassMVA) continue;
     if(!passMVA(pMVAInfo)  &&  iPassMVA) continue;
     LorentzVector  pFullVec; pFullVec = iJets[i0].p4; //Full 4 vector
@@ -127,8 +129,8 @@ std::pair<MetUtilities::LorentzVector,double> MetUtilities::NoPUMet(std::vector<
   LorentzVector     lVec;
   std::pair<LorentzVector,double> lTKMet  = TKMet (iCands,iDZ,0);
   std::pair<LorentzVector,double> lJetMet = JetMet(iJets     ,true);
-  double lNPSumEtBug = 0; for(int i0 = 0; i0 < int(iCands.size()); i0++) if(iCands[i0].second > 0) lNPSumEtBug += iCands[i0].first.pt();  //One More bug
-  lVec += lTKMet.first;     lSumEt += lNPSumEtBug;
+
+  lVec += lTKMet.first;     lSumEt += lTKMet.second;
   lVec += lJetMet.first;    lSumEt += lJetMet.second; 
   std::pair<LorentzVector,double> lNoPUMet(lVec,lSumEt);
   return lNoPUMet;
@@ -138,6 +140,7 @@ std::pair<MetUtilities::LorentzVector,double> MetUtilities::PUMet  (std::vector<
   LorentzVector     lVec;
   std::pair<LorentzVector,double> lTKMet  = TKMet (iCands,iDZ,   1);
   std::pair<LorentzVector,double> lJetMet = JetMet(iJets     ,false);
+
   lVec += lTKMet .first;    lSumEt += lTKMet .second;
   lVec += lJetMet.first;    lSumEt += lJetMet.second; 
   std::pair<LorentzVector,double> lPUMet(lVec,lSumEt);
@@ -151,7 +154,7 @@ std::pair<MetUtilities::LorentzVector,double>  MetUtilities::PUCMet (std::vector
   std::pair<LorentzVector,double> lJetMet = JetMet(iJets     ,false);
   lVec += lPFMet .first;     lSumEt += lPFMet .second;
   lVec -= lTKMet .first;     lSumEt -= lTKMet .second; 
-  lVec -= lJetMet.first;     lSumEt += lJetMet.second;  //The Sum Et line here was a bug in the training
+  lVec -= lJetMet.first;     lSumEt -= lJetMet.second;  
   std::pair<LorentzVector,double> lPUCMet(lVec,lSumEt);
   return lPUCMet;
 }

@@ -138,10 +138,10 @@ void MVAMetProducer::makeJets(std::vector<MetUtilities::JetInfo> &iJetInfo,PFJet
       pJetObject.mva      = lMVA;
       pJetObject.neutFrac = lNeuFrac;
       //Following discussion with Jet MET convenors < 10 GeV use rho correction only below 10
-      if(pUCJet->pt() < 10) { 
-	TLorentzVector lCorrPt ;  lCorrPt.SetPtEtaPhiM(max(pUCJet->pt()-pCJet->jetArea()*iRho,0.),pCJet->eta(),pCJet->phi(),pCJet->mass());
-	pJetObject.p4.SetCoordinates(lCorrPt.Px(),lCorrPt.Py(),lCorrPt.Pz(),lCorrPt.E());
-      }
+      //if(pUCJet->pt() < 10) { 
+      //TLorentzVector lCorrPt ;  lCorrPt.SetPtEtaPhiM(max(pUCJet->pt()-pCJet->jetArea()*iRho,0.),pCJet->eta(),pCJet->phi(),pCJet->mass());
+      //pJetObject.p4.SetCoordinates(lCorrPt.Px(),lCorrPt.Py(),lCorrPt.Pz(),lCorrPt.E());
+      //}
       //pJetObject.p4       = pUCJet->p4(); 
       iJetInfo.push_back(pJetObject);
       break;
@@ -183,7 +183,7 @@ double MVAMetProducer::pfCandDz(const PFCandidate* iPFCand, const Vertex *iPV) {
   return lDz;
 }
 double MVAMetProducer::jetMVA (const PFJet *iCorrJet,double iJec, const Vertex iPV, const reco::VertexCollection &iAllvtx,bool iPrintDebug) { 
-  PileupJetIdentifier lPUJetId =  fPUJetIdAlgo->computeIdVariables(iCorrJet,iJec,&iPV,iAllvtx,true);
+  PileupJetIdentifier lPUJetId =  fPUJetIdAlgo->computeIdVariables(iCorrJet,iJec,&iPV,iAllvtx,false);
   if(iPrintDebug) { std::cout << "Debug Jet MVA: "
 			      << lPUJetId.nvtx()      << " "
 			      << iCorrJet->pt()       << " "
