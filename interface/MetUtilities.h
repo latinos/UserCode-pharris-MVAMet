@@ -36,6 +36,8 @@ class MetUtilities {
 					     std::vector<std::pair<LorentzVector,double> > &iCands,std::vector<JetInfo> &iJets,double iDZ);
   std::pair<LorentzVector,double> PUCRecoil(double iSumEt,LorentzVector iVis,
 					    std::vector<std::pair<LorentzVector,double> > &iCands ,std::vector<JetInfo> &iJets,double iDZ);
+
+  double fJetPtMin;
  protected:
   // PU jet identifier 
   double fMVACut[3][4][4];  //Jet Id MVA

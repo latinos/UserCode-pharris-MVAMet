@@ -86,6 +86,7 @@ class MVAMet {
     TString      fCovU1MethodName;
     TString      fCovU2MethodName;
     Bool_t       fIsInitialized;
+    Bool_t       f42;
     MVAType      fType;
     double  fDZCut  ;
     Float_t fSumEt  ;

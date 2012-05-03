@@ -26,6 +26,7 @@ MetUtilities::MetUtilities() { //, bool isData) {
     for(int i1 = 0; i1 < 4; i1++) mvacut_[i0][3][i1] = pt3050[i1];
     }
   */
+  fJetPtMin = -1.;
   //Tight Id
   fMVACut[0][0][0] =  0.5; fMVACut[0][0][1] = 0.6; fMVACut[0][0][2] = 0.6; fMVACut[0][0][3] = 0.9;
   fMVACut[0][1][0] = -0.2; fMVACut[0][1][1] = 0.2; fMVACut[0][1][2] = 0.2; fMVACut[0][1][3] = 0.6;
@@ -81,13 +82,13 @@ double MetUtilities::deltaR(LorentzVector &iVec1,LorentzVector &iVec2) {
 }
 void MetUtilities::cleanJets(std::vector<LorentzVector> &iVis,std::vector<JetInfo> &iJets) { 
   for(int i0   = 0; i0 < int(iJets.size()); i0++) { 
-    bool lJetIsLepton = false;
+    bool lRemoveJet = false;
     for(int i1 = 0; i1 < int(iVis.size());  i1++) { 
-      if(deltaR(iVis[i1],iJets[i0].p4) < 0.5) {
-	lJetIsLepton = true;
+      if(deltaR(iVis[i1],iJets[i0].p4) < 0.5 || iJets[i0].p4.pt() < fJetPtMin) {
+	lRemoveJet = true;
       }
     }
-    if(lJetIsLepton) { iJets.erase (iJets.begin()+i0); i0--;}
+    if(lRemoveJet) { iJets.erase (iJets.begin()+i0); i0--;}
   }
 }
 std::pair<MetUtilities::LorentzVector,double> MetUtilities::TKMet(std::vector<std::pair<LorentzVector,double> > &iCands,double iDZ,int iLowDz) { 
@@ -109,8 +110,7 @@ std::pair<MetUtilities::LorentzVector,double> MetUtilities::JetMet(std::vector<J
   int lNPass = 0;
   for(int i0 = 0; i0 < int(iJets.size()); i0++) { 
     std::pair<LorentzVector,double> pMVAInfo(iJets[i0].p4,iJets[i0].mva);
-    bool pPass =  passMVA(pMVAInfo);
-
+    //bool pPass =  passMVA(pMVAInfo);
     if( passMVA(pMVAInfo)  && !iPassMVA) continue;
     if(!passMVA(pMVAInfo)  &&  iPassMVA) continue;
     LorentzVector  pFullVec; pFullVec = iJets[i0].p4; //Full 4 vector

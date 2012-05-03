@@ -61,6 +61,8 @@ void MVAMet::Initialize(const edm::ParameterSet &iConfig,
   fIsInitialized = kTRUE;
   fUtils         = new MetUtilities();//iConfig);  
   fType          = iType;
+  f42            = iU1Weights.Contains("42");
+  if(f42)  fUtils->fJetPtMin = 1.;
 
   TFile *lPhiForest = new TFile(iPhiWeights,"READ");
   fPhiReader = (GBRForest*)lPhiForest->Get(fPhiMethodName);
@@ -288,6 +290,7 @@ std::pair<MVAMet::LorentzVector,TMatrixD> MVAMet::GetMet(std::vector<LorentzVect
  
   int lNJets           = fUtils->NJets(iJets,30);
   int lNAllJet         = int(iJets.size());
+  if(f42)     lNAllJet = fUtils->NJets(iJets,1.);
   LorentzVector *lLead = fUtils->leadPt(iJets,true); 
   LorentzVector *l2nd  = fUtils->leadPt(iJets,false); 
 
