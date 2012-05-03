@@ -1,4 +1,0 @@
-<use   name="pharris/MVAMet"/>
-<library   file="*.cc" name="pharrisMVAMetPlugins">
-  <flags   EDM_PLUGIN="1"/>
-</library>
