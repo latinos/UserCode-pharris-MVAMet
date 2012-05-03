@@ -104,11 +104,11 @@ void MVAMetProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup) 
 
   LorentzVector lVis0; lVis0.SetCoordinates(lD0.Px(),lD0.Py(),lD0.Pz(),lD0.E());
   LorentzVector lVis1; lVis1.SetCoordinates(lD1.Px(),lD1.Py(),lD1.Pz(),lD1.E());
-  lVisible.push_back(lVis0);
-  lVisible.push_back(lVis1);
-
+  //lVisible.push_back(lVis0);
+  //lVisible.push_back(lVis1);
+  
   //Calculate the MVA
-  std::pair<LorentzVector,TMatrixD> lMVAMetInfo = fMVAMet->GetMet(lVisible,lJetInfo,lPFInfo,lVtxInfo,false);
+  std::pair<LorentzVector,TMatrixD> lMVAMetInfo = fMVAMet->GetMet(lVisible,lJetInfo,lPFInfo,lVtxInfo,true);
   std::cout << "Met---> " << lMVAMetInfo.first.pt() << " -- " << lMVAMetInfo.first.phi() 
 	    << " Cov matrix " << lMVAMetInfo.second(0,0)  << " -- " << lMVAMetInfo.second(0,1)  << " -- " << lMVAMetInfo.second(1,0)  << " -- " << lMVAMetInfo.second(1,1) << std::endl;
 
@@ -183,7 +183,7 @@ double MVAMetProducer::pfCandDz(const PFCandidate* iPFCand, const Vertex *iPV) {
   return lDz;
 }
 double MVAMetProducer::jetMVA (const PFJet *iCorrJet,double iJec, const Vertex iPV, const reco::VertexCollection &iAllvtx,bool iPrintDebug) { 
-  PileupJetIdentifier lPUJetId =  fPUJetIdAlgo->computeIdVariables(iCorrJet,iJec,&iPV,iAllvtx,false);
+  PileupJetIdentifier lPUJetId =  fPUJetIdAlgo->computeIdVariables(iCorrJet,iJec,&iPV,iAllvtx,true);
   if(iPrintDebug) { std::cout << "Debug Jet MVA: "
 			      << lPUJetId.nvtx()      << " "
 			      << iCorrJet->pt()       << " "

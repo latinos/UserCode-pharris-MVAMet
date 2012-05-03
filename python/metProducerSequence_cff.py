@@ -1,7 +1,3 @@
-
-
-
-
 import FWCore.ParameterSet.Config as cms
 from CMGTools.External.puJetIDAlgo_cff import *
 
@@ -13,6 +9,7 @@ mvaMet   = cms.EDProducer("MVAMetProducer",
                           RhoName         = cms.InputTag('kt6PFJets','rho'),
                           JetPtMin        = cms.double(0.),
                           dZMin           = cms.double(0.1),
+                          runMvas         = cms.bool(True),
                           impactParTkThreshold = cms.untracked.double(1.) ,
                           tmvaWeights    = cms.string("CMGTools/External/data/mva_JetID_v1.weights.xml"),
                           tmvaMethod    = cms.string("JetID"),
@@ -35,6 +32,7 @@ mvaMet   = cms.EDProducer("MVAMetProducer",
     "frac04",
     "frac05",
     ),
+                          label          = cms.string("PhilV1"),
                           tmvaSpectators = cms.vstring(),
                           JetIdParams = JetIdParams
                           )
