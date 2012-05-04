@@ -6,14 +6,10 @@ process.MessageLogger.cerr.FwkReport.reportEvery = cms.untracked.int32(10)
 process.load('Configuration.StandardSequences.Services_cff')
 process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
 process.load('JetMETCorrections.Configuration.JetCorrectionProducers_cff')
-process.load('pharris.MVAMet.metProducerSequence_cff')
-#process.load('pharris.MVAMet.testMetProducerSequence_cff')
- 
-#process.GlobalTag.globaltag = 'GR_R_42_V23::All'
-#process.GlobalTag.globaltag = 'MC_44_V12::All'
-#process.GlobalTag.globaltag = 'MC_44_V12::All'
-process.GlobalTag.globaltag = 'START50_V15::All'
-#START52_V4::All'
+process.load('pharris.MVAMetForCMG.metProducerSequence_cff')
+
+process.GlobalTag.globaltag = 'START52_V9::All'
+
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(10) )
 
 process.source = cms.Source("PoolSource",
@@ -28,7 +24,6 @@ process.output = cms.OutputModule("PoolOutputModule",
                                   fileName = cms.untracked.string("test.root")
 )       
 
-#process.ana = cms.Sequence(.metSquence)
 process.ana      = cms.Sequence(process.ak5PFJetsL1L2L3*process.metSequence)
 process.p        = cms.Path(process.ana)
 process.outpath  = cms.EndPath(process.output)

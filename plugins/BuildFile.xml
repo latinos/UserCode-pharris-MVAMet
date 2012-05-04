@@ -1,4 +1,4 @@
-<use   name="pharris/MVAMet"/>
-<library   file="*.cc" name="pharrisMVAMetPlugins">
+<use   name="pharris/MVAMetForCMG"/>
+<library   file="*.cc" name="pharrisMVAMetForCMGPlugins">
   <flags   EDM_PLUGIN="1"/>
 </library>

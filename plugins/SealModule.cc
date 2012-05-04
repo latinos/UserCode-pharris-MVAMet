@@ -1,7 +1,7 @@
 #include "FWCore/Framework/interface/MakerMacros.h"
-#include "pharris/MVAMet/plugins/MVAMetProducer.h"
+#include "pharris/MVAMetForCMG/plugins/MetFlavorProducer.h"
 
-DEFINE_FWK_MODULE (MVAMetProducer);
+DEFINE_FWK_MODULE (MetFlavorProducer);
 
 
 

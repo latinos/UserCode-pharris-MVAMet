@@ -4,7 +4,7 @@
 #include "TMath.h"
 #include <algorithm>
 #include <TLorentzVector.h>
-#include "pharris/MVAMet/interface/MetUtilities.h"
+#include "pharris/MVAMetForCMG/interface/MetUtilities.h"
 
 using namespace std;
 
@@ -189,4 +189,14 @@ std::pair<MetUtilities::LorentzVector,double> MetUtilities::PUCRecoil(double iSu
   double lSumEt      = lPUCMet.second-iSumEt; 
   std::pair<LorentzVector,double> lPUCRecoil(lVec,lSumEt);
   return lPUCRecoil;
+}
+std::pair<MetUtilities::LorentzVector,double> MetUtilities::Recoil(double iSumEt,double iPtVis,double iPhiVis,
+								      std::pair<LorentzVector,double> &iMet) { 
+  LorentzVector  lVec;  lVec += iMet.first; 
+  TLorentzVector lTVis; lTVis.SetPtEtaPhiM(iPtVis,0.,iPhiVis,0);  
+  LorentzVector  lVis;  lVis.SetCoordinates(lTVis.Px(),lTVis.Py(),lTVis.Pz(),lTVis.E());
+  lVec += lVis;
+  double lSumEt      = iMet.second-iSumEt; 
+  std::pair<LorentzVector,double> lRecoil(lVec,lSumEt);
+  return lRecoil;
 }

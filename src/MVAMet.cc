@@ -2,7 +2,8 @@
 #include <TMath.h>
 #include <TLorentzVector.h>
 #include "Cintex/Cintex.h"
-#include "pharris/MVAMet/interface/MVAMet.h"
+#include "pharris/MVAMetForCMG/interface/MVAMet.h"
+
 
 //--------------------------------------------------------------------------------------------------
 MVAMet::MVAMet(double iDZCut) :
@@ -336,6 +337,113 @@ std::pair<MVAMet::LorentzVector,TMatrixD> MVAMet::GetMet(std::vector<LorentzVect
 
   LorentzVector  lMetVec (0,0,0,0);   lMetVec.SetCoordinates(lUVec.Px(),lUVec.Py(),lUVec.Pz(),lUVec.E());
   TMatrixD     lCov(2,2);
+  //Covariance matrix perpendicular and parallel to the recoil (sort of correct)
+  double lCovU1 = evaluateCovU1();
+  double lCovU2 = evaluateCovU2();
+
+  double lCos2 = cos(fUPhiMVA)*cos(fUPhiMVA);
+  double lSin2 = sin(fUPhiMVA)*sin(fUPhiMVA);
+
+  //Now Compute teh covariance matrix in X and Y 
+  lCov(0,0)   =  lCovU1*lCos2+lCovU2*lSin2;
+  lCov(1,0)   = -lCovU1*sin(fUPhiMVA)*cos(fUPhiMVA)+lCovU2*sin(fUPhiMVA)*cos(fUPhiMVA);
+  lCov(0,1)   = lCov(1,0);
+  lCov(1,1)   = lCovU1*lSin2+lCovU2*lCos2;
+
+  if (iPrintDebug == kTRUE) {
+    std::cout << "Debug MetMVA: "
+	      <<  fU        << " : "
+	      <<  fUPhi     << " : "
+	      <<  fTKSumEt  << " : "
+	      <<  fTKU      << " : "
+	      <<  fTKUPhi   << " : "
+	      <<  fNPSumEt  << " : "
+	      <<  fNPU      << " : "
+	      <<  fNPUPhi   << " : "
+	      <<  fPUSumEt  << " : "
+	      <<  fPUMet    << " : "
+	      <<  fPUMetPhi << " : "
+	      <<  fPCSumEt  << " : "
+	      <<  fPCU      << " : "
+	      <<  fPCUPhi   << " : "
+	      <<  fJSPt1    << " : "
+	      <<  fJSEta1   << " : "
+	      <<  fJSPhi1   << " : "
+	      <<  fJSPt2    << " : "
+	      <<  fJSEta2   << " : "
+	      <<  fJSPhi2   << " : "
+	      <<  fNJet     << " : "
+	      <<  fNAllJet  << " : "
+	      <<  fNPV      << " : "
+              << " === : === "
+              << std::endl;
+  }
+  std::pair<LorentzVector,TMatrixD> lMet(lMetVec,lCov);
+  return lMet;
+}
+//Jets Must Bet Cleaned
+std::pair<MVAMet::LorentzVector,TMatrixD> MVAMet::GetMet(double iPtVis,double iPhiVis,double iSumEtVis,
+							 const reco::PFMET *iPFMet,	
+							 const reco::PFMET *iTKMet,		
+							 const reco::PFMET *iNoPUMet,		
+							 const reco::PFMET *iPUMet,
+							 const reco::PFMET *iPUCMet,
+							 LorentzVector *iLeadJet,
+							 LorentzVector *i2ndJet,
+							 int iNJetsGt30,
+							 int iNJetsGt1,
+							 int iNGoodVtx,
+							 bool iPrintDebug) { 
+  std::pair<LorentzVector,double> lPFMet;    lPFMet.first   = iPFMet  ->p4(); lPFMet  .second = iPFMet  ->sumEt();
+  std::pair<LorentzVector,double> lTKMet;    lTKMet.first   = iTKMet  ->p4(); lTKMet  .second = iTKMet  ->sumEt();
+  std::pair<LorentzVector,double> lNoPUMet;  lNoPUMet.first = iNoPUMet->p4(); lNoPUMet.second = iNoPUMet->sumEt();
+  std::pair<LorentzVector,double> lPUCMet;   lPUCMet.first  = iPUCMet ->p4(); lPUCMet .second = iPUCMet ->sumEt();
+
+  std::pair<LorentzVector,double> lPFRec  = fUtils->Recoil(iSumEtVis,iPtVis,iPhiVis,lPFMet);
+  std::pair<LorentzVector,double> lTKRec  = fUtils->Recoil(iSumEtVis,iPtVis,iPhiVis,lTKMet);
+  std::pair<LorentzVector,double> lNPRec  = fUtils->Recoil(iSumEtVis,iPtVis,iPhiVis,lNoPUMet);
+  std::pair<LorentzVector,double> lPCRec  = fUtils->Recoil(iSumEtVis,iPtVis,iPhiVis,lPUCMet);
+  
+ 
+  fSumEt   = lPFRec.second;
+  fU       = lPFRec.first.rho();
+  fUPhi    = lPFRec.first.phi();
+  fTKSumEt = lTKRec.second/lPFRec.second;
+  fTKU     = lTKRec.first.rho();
+  fTKUPhi  = lTKRec.first.phi();
+  fNPSumEt = lNPRec.second/lPFRec.second;
+  fNPU     = lNPRec.first.rho();
+  fNPUPhi  = lNPRec.first.phi();
+  fPUSumEt = iPUMet->sumEt()/lPFRec.second;
+  fPUMet   = iPUMet->pt();
+  fPUMetPhi= iPUMet->phi();
+  fPCSumEt = lPCRec.second/lPFRec.second;
+  fPCU     = lPCRec.first.rho() ;
+  fPCUPhi  = lPCRec.first.phi();
+  fJSPt1   = 0; if(iLeadJet != 0) fJSPt1  = iLeadJet->pt();
+  fJSEta1  = 0; if(iLeadJet != 0) fJSEta1 = iLeadJet->eta();
+  fJSPhi1  = 0; if(iLeadJet != 0) fJSPhi1 = iLeadJet->phi();
+  fJSPt2   = 0; if(i2ndJet  != 0) fJSPt2  = i2ndJet ->pt();
+  fJSEta2  = 0; if(i2ndJet  != 0) fJSEta2 = i2ndJet ->eta();
+  fJSPhi2  = 0; if(i2ndJet  != 0) fJSPhi2 = i2ndJet ->phi();
+  fNJet    = iNJetsGt30;
+  fNAllJet = iNJetsGt1;
+  fNPV     = iNGoodVtx;
+ 
+  Float_t lMVA = evaluatePhi();
+  
+  fUPhiMVA  = fUPhi + lMVA; 
+  lMVA     = evaluateU1();
+  fUMVA    = fU*lMVA;
+
+  TLorentzVector lUVec (0,0,0,0);   lUVec .SetPtEtaPhiM(fUMVA,0,fUPhiMVA,0);
+  TLorentzVector lVVec (0,0,0,0);   lVVec .SetPtEtaPhiM(iPtVis ,0,iPhiVis ,0);
+  if(lMVA < 0) lUVec .RotateZ(TMath::Pi());                                                   
+  lUVec      -= lVVec;
+
+  LorentzVector  lMetVec (0,0,0,0);   lMetVec.SetCoordinates(lUVec.Px(),lUVec.Py(),lUVec.Pz(),lUVec.E());
+  TMatrixD     lCov(2,2);
+
   //Covariance matrix perpendicular and parallel to the recoil (sort of correct)
   double lCovU1 = evaluateCovU1();
   double lCovU2 = evaluateCovU2();

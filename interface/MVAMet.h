@@ -17,9 +17,10 @@
 
 #include "DataFormats/Math/interface/Vector3D.h"
 #include "DataFormats/Math/interface/LorentzVector.h"
+#include "DataFormats/METReco/interface/PFMET.h"
 
 #include "CondFormats/EgammaObjects/interface/GBRForest.h"
-#include "pharris/MVAMet/interface/MetUtilities.h"
+#include "pharris/MVAMetForCMG/interface/MetUtilities.h"
 
 class MVAMet {
  public:
@@ -79,7 +80,23 @@ class MVAMet {
 					    bool iPrintDebug=false);
   
   MetUtilities *fUtils;
-    
+  
+  
+  //Jets Must Bet Cleaned
+  std::pair<MVAMet::LorentzVector,TMatrixD> GetMet(double iPtVis,double iPhiVis,double iSumEtVis,
+						   const reco::PFMET *iPFMet,	
+						   const reco::PFMET *iTKMet,		
+						   const reco::PFMET *iNoPUMet,		
+						   const reco::PFMET *iPUMet,
+						   const reco::PFMET *iPUCMet,
+						   LorentzVector *iLeadJet,
+						   LorentzVector *i2ndJet,
+						   int iNJetsGt30,
+						   int iNJetsGt1,
+						   int iNGoodVtx,
+						   bool iPrintDebug);
+  
+  
   protected:
     TString      fPhiMethodName;
     TString      fU1MethodName;
